@@ -1,0 +1,28 @@
+[
+    {
+        "id": "q1",
+        "type": "single",
+        "title": "What is the capital of France?",
+        "options": ["Berlin", "Madrid", "Paris", "Rome"],
+        "answer": "Paris"
+    },
+    {
+        "id": "q2",
+        "type": "multiple",
+        "title": "Select the prime numbers.",
+        "options": ["2", "3", "4", "5"],
+        "answer": ["2", "3", "5"]
+    },
+    {
+        "id": "q3",
+        "type": "short",
+        "title": "Explain the theory of relativity.",
+        "answer": "It is a theory by Einstein that describes the laws of physics in the presence of gravitational fields and high velocities."
+    },
+    {
+        "id": "q4",
+        "type": "truefalse",
+        "title": "The Earth is flat.",
+        "answer": "false"
+    }
+]

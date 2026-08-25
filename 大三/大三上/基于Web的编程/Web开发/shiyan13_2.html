@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>手机通讯录管理器</title>
+    <link rel="stylesheet" href="http://172.31.233.204/resource/css/11-2.css">
+</head>
+
+<body>
+    <h1>手机通讯录管理器</h1>
+    <div class="container">
+        <div class="input-group">
+            <input type="text" id="name" placeholder="请输入姓名" />
+            <input type="text" id="phone" placeholder="请输入电话号码" />
+        </div>
+        <div class="input-group">
+            <input type="button" id="addButton" value="添加" />
+            <input type="button" id="searchButton" value="查询" />
+            <input type="button" id="resetButton" value="重置" />
+        </div>
+        <div id="content">
+            <ul>
+                <!-- 初始内容 -->
+                <li>通讯录为空，请添加联系人。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        var nameInput = document.getElementById("name");
+        var phoneInput = document.getElementById("phone");
+        var contentArea = document.getElementById("content");
+        var addButton = document.getElementById("addButton");
+        var searchButton = document.getElementById("searchButton");
+        var resetButton = document.getElementById("resetButton");
+
+        // TODO 实时验证姓名输入：禁止非法字符
+        nameInput.addEventListener("input", function () {
+            this.value = this.value.replace(/[^a-zA-Z\u4e00-\u9fa5]/g, "");
+        })
+
+        // TODO 实时验证电话号码输入：只允许数字
+        phoneInput.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9]/g, "");
+        });
+
+        // 初始化 IndexedDB
+        var db;
+        var request = window.indexedDB.open("contactsDB", 2);
+
+        request.onerror = function (event) {
+            alert("数据库打开出错");
+        };
+
+        // TODO 在onupgradeneeded中判断有没之前有无存在contacts表（对象存储），没有则创建
+        request.onupgradeneeded = function (event) {
+            db = event.target.result;
+            // 如果没有"contacts"对象则创建
+            if (!db.objectStoreNames.contains("contacts")) {
+                var objectStore = db.createObjectStore("contacts", { keyPath: "phone" });
+                objectStore.createIndex("name", "name", { unique: false });
+            }
+        };
+
+        // TODO IndexedDB 的打开是异步的，所以需要在 onsuccess 回调中 更新db对象 同时调用 loadContacts() 
+        request.onsuccess = function (event) {
+            console.log("Database opened successfully");
+            db = event.target.result;
+            loadContacts();
+        };
+
+        // TODO function 生成单个联系人列表项。 
+        // 形式： <li>姓名 - 电话号码<button class="delete-btn">删除</button></li>
+        function createContactItem(name, phone) {
+            var li = document.createElement("li");
+            li.innerHTML = name + " - " + phone + '<button class="delete-btn">删除</button>';
+            li.querySelector(".delete-btn").addEventListener("click", function () {
+                deleteContact(phone);
+            });
+            return li;
+        }
+
+        // TODO 加载通讯录联系人
+        function loadContacts() {
+            var list = contentArea.querySelector("ul");
+            // list.innerHTML = "<li>通讯录为空，请添加联系人。</li>";
+            list.innerHTML = ""; // 清空列表
+            // TOOD 开启事务，获取对象存储，获取所有联系人，遍历生成列表项，添加到列表list中。
+            var transaction = db.transaction(["contacts"], "readonly");
+            var objectStore = transaction.objectStore("contacts");
+            // 使用游标读取数据
+            var cursorRequest = objectStore.openCursor();
+            cursorRequest.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    var li = createContactItem(cursor.value.name, cursor.value.phone);
+                    list.appendChild(li);
+                    cursor.continue();
+                }
+                else {
+                    if (list.children.length === 0) {
+                        list.innerHTML = "<li>通讯录为空，请添加联系人。</li>";
+                    }
+                }
+            }
+        }
+
+        // 添加联系人
+        function addContact() {
+            var name = nameInput.value.trim();
+            var phone = phoneInput.value.trim();
+            // TODO 检查非空
+            if (!name) {
+                alert("姓名不能为空");
+                return;
+            }
+            if (!phone) {
+                alert("电话号码不能为空");
+                return;
+            }
+
+            // TODO 开启事务，获取对象存储，查询是否存在该号码，存在则询问是否覆盖，不存在则添加联系人
+            var transaction = db.transaction(["contacts"], "readwrite");
+            var objectStore = transaction.objectStore("contacts");
+            var request = objectStore.get(phone);
+
+            request.onsuccess = function (event) {
+                // 如果号码已经存在
+                if (event.target.result) {
+                    // 确认覆盖
+                    if (confirm("该号码已存在，是否覆盖？")) {
+                        event.target.result.name = name;
+                        objectStore.put(event.target.result);
+                        alert("联系人已更新！");
+                        loadContacts();
+                    }
+                } else {
+                    objectStore.add({ name: name, phone: phone });
+                    alert("联系人已添加");
+                    loadContacts();
+                }
+            }
+        }
+
+        // 查询联系人
+        function searchContact() {
+            var name = nameInput.value.trim();
+            var phone = phoneInput.value.trim();
+            var list = contentArea.querySelector("ul");
+            list.innerHTML = "<li>未找到匹配的联系人。</li>"; // 默认显示未找到
+
+            // TODO 开启事务，获取对象存储，遍历所有联系人，匹配姓名和电话号码，生成列表项，添加到列表list中。
+            var transaction = db.transaction(["contacts"], "readonly");
+            var objectStore = transaction.objectStore("contacts");
+            var request = objectStore.openCursor();
+
+            request.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    // 如果找到对应的联系人
+                    if (cursor.value.name.includes(name) || cursor.value.phone.includes(phone)) {
+                        var li = createContactItem(cursor.value.name, cursor.value.phone);
+                        list.appendChild(li);
+                    }
+                    cursor.continue();
+                }
+            }
+        }
+
+        // TODO 删除联系人:开启事务 获取对象存储 执行删除操作 成功回调 错误回调
+        function deleteContact(phone) {
+            // 
+            var transaction = db.transaction(["contacts"], "readwrite");
+            var objectStore = transaction.objectStore("contacts");
+            var request = objectStore.delete(phone);
+            request.onsuccess = function (event) {
+                alert("联系人已删除！");
+                loadContacts();
+            };
+            request.onerror = function (event) {
+                alert("删除联系人失败");
+            };
+        }
+
+        // TODO 重置输入框
+        function resetInputs() {
+            nameInput.value = "";
+            phoneInput.value = "";
+        }
+
+        // 事件绑定
+        addButton.addEventListener("click", addContact);
+        searchButton.addEventListener("click", searchContact);
+        resetButton.addEventListener("click", resetInputs);
+
+    </script>
+</body>
+
+</html>

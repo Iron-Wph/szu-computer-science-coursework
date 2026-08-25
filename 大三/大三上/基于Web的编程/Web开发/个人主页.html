@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SZU--个人主页</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #8fdeec;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .user-avatar {
+            height: 70px;
+            width: 70px;
+            border-radius: 50%;
+        }
+
+        .user-nickname {
+            margin-left: 10px;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .background {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .background img {
+            width: 100%;
+            height: 180px;
+        }
+
+        .wrapper {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: #6dc6da;
+            height: auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .sidebar p:hover {
+            background: #49cfe4;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background: #88c8f9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .personal-info {
+            padding: 20px;
+            border-radius: 10px;
+            background: #f9f9f9;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            /* 减小模块宽度 */
+            margin: auto;
+        }
+
+        .personal-info h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item img {
+            display: block;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #333;
+            flex-basis: 30%;
+            text-align: right;
+        }
+
+        .info-item input[type="text"],
+        .info-item input[type="date"],
+        .info-item select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            flex-grow: 1;
+            font-size: 1em;
+        }
+
+        .info-item button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            margin: auto;
+            /* 按钮居中 */
+        }
+
+        .info-item button:hover {
+            background-color: #4cae4c;
+        }
+
+        .sidebar p {
+            background: #e9ecef;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="background">
+        <img src="https://csse.szu.edu.cn/attachment/slider/1646122245_index5_05.png" alt="学院照片">
+    </div>
+
+    <div class="user-profile">
+        <img src="http://172.31.233.204/resource/img/exp1/zhangsan.jpg" alt="张三的个人照片" class="user-avatar">
+        <p class="user-nickname">Iron_Wph</p>
+    </div>
+
+    <hr>
+
+    <div class="wrapper">
+        <div class="sidebar">
+            <p><b><a href="#div1">个人信息</a></b></p>
+            <p><b><a href="#div2">我的竞赛</a></b></p>
+            <p><b>我的团队</b></p>
+            <p><b>我的学习</b></p>
+            <p><b>荣誉资质</b></p>
+            <p><b>成长体系</b></p>
+            <p><b>我的消息</b></p>
+        </div>
+        <!-- 个人信息板块 -->
+        <div class="content" id="div1">
+            <form action="">
+                <div class="personal-info">
+                    <h2>个人信息</h2>
+                    <div class="info-item">
+                        <img class="profile" src="http://172.31.233.204/resource/img/exp1/zhangsan.jpg" alt="张三的个人照片"
+                            width="200px" height="200px">
+                    </div>
+
+                    <div class="info-item">
+                        <label for="username">真实姓名：</label>
+                        <input type="text" id="username" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label>性别：</label>
+                        <input type="radio" name="gender" value="male" required>男
+                        <input type="radio" name="gender" value="female" required>女
+                    </div>
+
+                    <div class="info-item">
+                        <label for="birth-date">出生年月：</label>
+                        <input type="date" id="birth-date" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="age">年龄：</label>
+                        <input type="text" id="age" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="nationality">国籍：</label>
+                        <input type="text" id="nationality" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label>身份：</label>
+                        <input type="radio" name="identity" value="student" required>学生
+                        <input type="radio" name="identity" value="teacher" required>老师
+                        <input type="radio" name="identity" value="other" required>其他
+                    </div>
+
+                    <div class="info-item">
+                        <label for="motto">个性签名：</label>
+                        <input type="text" name="motto" id="motto">
+                    </div>
+
+                    <div class="info-item">
+                        <label for="education">学历：</label>
+                        <select name="education" id="education">
+                            <option value="1">本科</option>
+                            <option value="2">专科</option>
+                            <option value="3">硕士</option>
+                            <option value="4">博士</option>
+                            <option value="5">其他</option>
+                        </select>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="school">毕业院校：</label>
+                        <input type="text" id="school" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="graduate-date">毕业年月：</label>
+                        <input type="date" id="graduate-date" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="email">邮箱：</label>
+                        <input type="text" id="email" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="phone">电话：</label>
+                        <input type="text" id="phone" required>
+                    </div>
+
+                    <div class="info-item">
+                        <button type="submit">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- 我的竞赛板块 -->
+        <div class="content" id="div2">
+        </div>
+    </div>
+    <footer class="footer">
+        <p>竞赛内容版权归内容提供者（机构）所有 技术支持：深圳大学计算机与软件学院</p>
+    </footer>
+</body>
+
+</html>

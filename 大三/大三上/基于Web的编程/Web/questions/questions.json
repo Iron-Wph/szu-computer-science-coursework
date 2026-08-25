@@ -1,0 +1,44 @@
+{
+  "single": [
+    {
+      "id": 1,
+      "question": "以下哪个是Python的基本数据类型？",
+      "options": ["Window", "String", "Screen", "Panel"],
+      "answer": "String",
+      "analysis": "Python的基本数据类型包括：字符串(String)、整数(int)、浮点数(float)、布尔值(bool)等。Window、Screen和Panel都是GUI相关的组件，不是基本数据类型。"
+    }
+  ],
+  "multiple": [
+    {
+      "id": 1,
+      "question": "以下哪些是Python的容器类型？",
+      "options": ["List", "Tuple", "Set", "String"],
+      "answer": ["List", "Tuple", "Set"],
+      "analysis": "Python的容器类型主要包括：列表(List)、元组(Tuple)、集合(Set)和字典(Dict)。虽然String也可以包含多个字符，但它通常被归类为基本数据类型而不是容器类型。"
+    }
+  ],
+  "judge": [
+    {
+      "id": 1,
+      "question": "Python是一门编译型语言。",
+      "answer": false,
+      "analysis": "Python是一门解释型语言，而不是编译型语言。Python代码在运行时由解释器逐行解释执行，不需要预先编译成机器码。这也是Python跨平台性好的原因之一。"
+    }
+  ],
+  "fill": [
+    {
+      "id": 1,
+      "question": "Python中用于定义函数的关键字是____。",
+      "answer": "def",
+      "analysis": "在Python中，使用def关键字来定义函数。例如：def function_name(): 。这是Python最基本的函数定义语法。"
+    }
+  ],
+  "essay": [
+    {
+      "id": 1,
+      "question": "简述Python的特点。",
+      "answer": "Python是一门高级编程语言，特点包括：简洁的语法、强大的第三方库、跨平台性、面向对象等。",
+      "analysis": "这个答案涵盖了Python的主要特点：\n1. 简洁的语法：使用缩进表示代码块，代码清晰易读\n2. 丰富的第三方库：如NumPy、Pandas等，扩展了Python的应用范围\n3. 跨平台性：可在Windows、Linux、Mac等系统上运行\n4. 面向对象：支持类、继承等面向对象特性"
+    }
+  ]
+} 

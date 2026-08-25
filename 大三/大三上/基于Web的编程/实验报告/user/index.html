@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 / 注册</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(27,31,35,.12), 0 8px 24px rgba(27,31,35,.12);
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #d1d5da;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+        }
+        input.invalid {
+            border-color: red;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .toggle-link {
+            margin-top: 16px;
+            text-align: center;
+        }
+        .toggle-link a {
+            color: #0366d6;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .password-container {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #0366d6;
+        }
+        .hidden {
+            display: none; /* 用于隐藏重置密码表单 */
+        }
+        .strength-indicator {
+            height: 5px;
+            width: 100%;
+            background-color: #e0e0e0;
+            margin-top: 5px;
+            border-radius: 3px;
+        }
+        .strength-weak {
+            background-color: red;
+        }
+        .strength-medium {
+            background-color: orange;
+        }
+        .strength-strong {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="form-title">登录</h2>
+        <form id="auth-form">
+            <div class="form-group" id="username-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required pattern="^[a-zA-Z0-9_]+$" title="只能包含字母、数字和下划线">
+                <div class="error" id="username-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required minlength="6">
+                    <button type="button" class="toggle-password" id="toggle-password">
+                        <i class="fas fa-eye" id="password-icon"></i>
+                    </button>
+                </div>
+                <div class="error" id="password-error"></div>
+                <div class="strength-indicator" id="strength-indicator"></div>
+            </div>
+            <button type="submit" class="btn" id="submit-button">登录</button>
+            <div class="toggle-link">
+                <span id="toggle-text">没有账户？</span>
+                <a id="toggle-button" href="#">注册</a>
+            </div>
+            <div class="toggle-link">
+                <a href="#" id="forgot-password-link">忘记密码？</a>
+            </div>
+        </form>
+
+        <form id="reset-password-form" class="hidden">
+            <h2>重置密码</h2>
+            <div class="form-group">
+                <label for="reset-username">用户名</label>
+                <input type="text" id="reset-username" name="reset-username" 
+                required pattern="^[a-zA-Z0-9_]+$" title="只能包含字母、数字和下划线">
+                <div class="error" id="reset-username-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="new-password">新密码</label>
+                <div class="password-container">
+                    <input type="password" id="new-password" name="new-password" required minlength="6">
+                    <button type="button" class="toggle-password" id="toggle-new-password">
+                        <i class="fas fa-eye" id="new-password-icon"></i>
+                    </button>
+                </div>
+                <div class="error" id="new-password-error"></div>
+                <div class="strength-indicator" id="new-strength-indicator"></div>
+            </div>
+            <button type="submit" class="btn" id="reset-button">确认重置</button>
+            <div class="toggle-link">
+                <a href="#" id="back-to-login">返回登录</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 15px;
+            /*display: none;*/
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+    <script src="http://172.31.233.204/resource/js/jquery.js"></script>
+</head>
+
+<body>
+
+    <div class="register-container">
+        <h2>用户注册</h2>
+        <div id="register-form">
+            <div class="input-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div class="input-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">确认密码</label>
+                <input type="password" id="confirm-password" name="confirm-password">
+            </div>
+            <div id="error-message" class="error-message"></div>
+            <button id="btn" type="button" class="btn">注册</button>
+        </div>
+    </div>
+
+    <script>
+        $('#btn').click(function () {
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var confirmPassword = $('#confirm-password').val();
+            var errorMessage = '';
+
+            if (!username || !password || !confirmPassword) {
+                errorMessage = '请输入用户名、密码和确认密码';
+            } else if (password !== confirmPassword) {
+                errorMessage = '密码与确认密码不一致';
+            }
+
+            if (errorMessage) {
+                $('#error-message').text(errorMessage).show();
+                return false;
+            }
+
+
+            $('#error-message').hide();
+
+
+            $.ajax({
+                url: "http://172.31.73.236:5000/user/register",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ username: username, password: password, confirmPassword: confirmPassword }),
+                success: function (response) {
+                    if (response.code === 200) {
+                        $('#error-message').text('注册成功').show();
+                    } else {
+                        $('#error-message').text('用户名已存在').show();
+                    }
+                },
+                error: function () {
+                    $('#error-message').text('服务器异常').show();
+                }
+            });
+        });
+
+
+        $('#username').blur(function () {
+            var username = $(this).val();
+            if (!username) return;
+
+            $.ajax({
+                url: "http://172.31.73.236:5000/user/check_username",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ username: username }),
+                success: function (response) {
+                    console.log('Username check response:', response);
+                    if (response.code === 200) {
+                        $('#error-message').text('用户名已存在').show();
+                    } else {
+                        $('#error-message').hide();
+                    }
+                },
+                error: function () {
+                    $('#error-message').text('服务器异常').show();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

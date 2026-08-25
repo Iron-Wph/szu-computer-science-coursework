@@ -1,0 +1,28 @@
+*{
+    font-family: "Arial";
+
+}
+
+.box{
+    width: 200px;
+    height: 200px;
+}
+
+#box-container{
+    display: block;
+    float: right;
+}
+
+.box:nth-child(1){
+    border: 2px solid black;
+}
+
+.box:nth-child(2){
+    border: 1px solid gray;
+    padding: 10px;
+}
+
+.box:nth-child(3){
+    border: 2px dashed blue;
+    margin: 20px;
+}

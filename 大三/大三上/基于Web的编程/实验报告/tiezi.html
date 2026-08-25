@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #weather-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 300px;
+        }
+        .sunny {
+            color: green;
+        }
+        .windy {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="weather-card">
+        <h1 id="weather-status">晴天</h1>
+        <button id="toggle-weather">切换天气</button>
+        <p>温度：<span id="temperature">25°C</span></p>
+        <p>湿度：<span id="humidity">60%</p>
+    </div>
+
+    <script>
+        document.getElementById('toggle-weather').addEventListener('click', function () {
+            var weatherStatus = document.getElementById('weather-status');
+            var temperature = document.getElementById('temperature');
+            var humidity = document.getElementById('humidity');
+            // 检查当前天气状态并切换
+            if (weatherStatus.textContent === '晴天') {
+                weatherStatus.textContent = '雨天';
+                weatherStatus.className = 'windy';
+                temperature.textContent = '15°C';
+                humidity.textContent = '80%';
+            } else {
+                weatherStatus.textContent = '晴天';
+                weatherStatus.className = 'sunny';
+                temperature.textContent = '25°C';
+                humidity.textContent = '60%';
+            }
+        });
+    </script>
+</body>
+
+</html>

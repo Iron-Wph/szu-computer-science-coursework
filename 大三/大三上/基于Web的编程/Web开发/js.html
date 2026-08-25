@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button>倒计时5秒</button>
+    <script>
+        let i = 5;
+        let btn = document.querySelector('button');
+        let n = setInterval(function(){
+            i--;
+            btn.innerHTML = `倒计时${i}秒`;
+            if(i === 0){
+                clearInterval(n);
+                btn.innerHTML = '倒计时结束';
+            }
+        }, 1000)
+
+        // 
+        let text = prompt("请输入一个数字", 100);
+        confirm(`你输入的数字是${text}`);
+
+        console.log(parseFloat("100.01"));
+    </script>
+</body>
+</html>

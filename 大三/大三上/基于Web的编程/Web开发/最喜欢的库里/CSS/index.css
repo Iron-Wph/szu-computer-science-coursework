@@ -1,0 +1,323 @@
+/* 页面基础设置 */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.index {
+    width: 90%;
+    height: auto;
+    display: block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    object-fit: cover;
+}
+
+/* 页面导航 */
+.site-header {
+    width: 90%;
+    height: 60px;
+    position: relative;
+    left: 0;
+    background-color: gold;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 100px;
+    box-sizing: border-box;
+}
+
+.logo {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    width: 30%;
+}
+
+.fruit-nav {
+    width: 70%;
+    padding: auto;
+    display: flex;
+    align-items: center;
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    height: 100%;
+}
+
+.nav-item a {
+    color: white;
+    padding: 5px 15px;
+    margin: 0px 20px;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    font-weight: bolder;
+    font-size: larger;
+}
+
+.nav-item a:hover {
+    background-color: #e3cd1f;
+}
+
+
+/* 页面内容 */
+
+/* 简介部分 */
+.summary {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    width: 90%;
+    height: 640px;
+    margin: 5px auto;
+    background-color: #f5f5f5;
+    box-sizing: border-box;
+    border: #e3cd1f solid 5px;
+}
+
+.personal_card img {
+    width: 500px;
+    height: 400px;
+    object-fit: contain;
+    margin: 0px 10px;
+}
+
+.person_info {
+    font-size: 20px;
+    margin-right: 100px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.person_info p {
+    text-align: left;
+    text-indent: 2em;
+    line-height: 1.5;
+}
+
+/* 跳转页面链接按钮 */
+.button{
+    display: block;
+    width: 25%;
+    height: 35px;
+    background-color: rgb(205, 59, 59);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    padding: auto;
+    margin: 20px auto; /* 添加垂直和水平居中对齐 */
+    box-sizing: border-box;
+}
+
+/* 生涯部分 */
+.career{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 90%;
+    height: 640px;
+    margin: 5px auto;
+    background-color: #f5f5f5;
+    box-sizing: border-box;
+    border: #e3cd1f solid 5px;
+}
+
+.career h2{
+    text-align: center;
+}
+
+/* 网格布局 */
+.grid-container {
+    display: grid;
+    /* 定义四列布局 */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px; /* 网格项之间的间距 */
+    padding: 20px;
+    justify-content: center; /* 水平居中对齐 */
+}
+
+.grid-item {
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.grid-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 精彩瞬间 */
+.album{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 90%;
+    height: auto;
+    margin: 5px auto;
+    background-color: #f5f5f5;
+    box-sizing: border-box;
+    border: #e3cd1f solid 5px;
+}
+
+.album h2{
+    text-align: center;
+}
+
+
+/* 轮播图 */
+.slider {
+    position: relative;
+    height: 600px;
+    width: 480px;
+    top: 50px;
+    overflow: hidden;
+    margin: auto;
+    /* 水平居中 */
+    /* border: #2196f3 solid 1px; */
+}
+
+.slides {
+    display: flex;
+    width: 100%;
+    /* 假设有4张图片 */
+    animation: slide 5s infinite;
+}
+
+.slide {
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    transition: transform 0.5s ease;
+    position: relative;
+    top: 0;
+    margin: auto;
+    padding: 0;
+}
+
+.slide img {
+    /* transform: scale(20%); */
+    /* object-fit:fill; */
+    /* object-fit: contain; */
+    /* object-fit: none; */
+    /* object-fit: cover; */
+    /* border: #2196f3 solid 10px; */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* 确保图片完整显示，保持宽高比，且不被裁剪 */
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(-200%);
+    }
+
+    75% {
+        transform: translateX(-300%);
+    }
+
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+/* 页脚 */
+footer {
+    width: 90%;
+    position: relative;
+    left: 0;
+    background-color: gold;
+    z-index: 1000;
+    padding: 0 100px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.footer-left,
+.footer-center {
+    flex: 1;
+    padding: 0 20px;
+}
+
+/* 应援文字的环绕效果 */
+.marquee-container {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* 使其在其他内容的上面 */
+    z-index: 10000;
+    position: fixed; /* 固定位置 */
+    top: 0; /* 从顶部开始 */
+    left: 0; /* 从左侧开始 */
+}
+
+.marquee-text:first-child {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 15s linear infinite;
+    position: absolute;
+    top: 30%;
+    left: 0;
+}
+
+.marquee-text:last-child {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 13s linear infinite;
+    position: absolute;
+    top: 70%;
+    left: 0;
+}
+
+.marquee-text span {
+    margin-right: 50px;
+    font-size: 1.2rem;
+    color: gold;
+    font-weight: bold;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字排序</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            width: 30%;
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 300px;
+        }
+
+        li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            cursor: grab;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .hover {
+            border: 2px dashed #007BFF;
+        }
+
+        #reset-order {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #reset-order:hover {
+            background-color: #0056b3;
+        }
+
+        #order-display {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>数字排序</h1>
+
+        <ul id="sortable-list">
+            <li draggable="true" data-value="1">1</li>
+            <li draggable="true" data-value="2">2</li>
+            <li draggable="true" data-value="3">3</li>
+            <li draggable="true" data-value="4">4</li>
+        </ul>
+
+        <button id="reset-order">重置顺序</button>
+        <p id="order-display">当前顺序=1,2,3,4</p>
+    </div>
+
+    <script>
+        // 这里写js代码
+        var list = document.getElementById('sortable-list');
+        var orderDisplay = document.getElementById('order-display');
+        var resetButton = document.getElementById('reset-order');
+        var originalOrder = [1, 2, 3, 4];
+        var dragitem = null;
+
+        // 拖拽开始
+        list.addEventListener('dragstart', function (e) {
+            dragitem = e.target;
+            dragitem.classList.add('dragging');
+        });
+
+        // 拖拽结束
+        list.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            e.target.classList.add('hover');
+        });
+
+        // 拖拽离开
+        list.addEventListener('dragleave', function (e) {
+            e.target.classList.remove('hover');
+        });
+
+        // 拖拽放下
+        list.addEventListener('drop', function (e) {
+            e.preventDefault();
+
+            var item = e.target;
+            if (item.tagName === 'LI') {
+                var draggingItem = dragitem.dataset.value;
+                var draggingElement = list.querySelector('[data-value="' + draggingItem + '"]');
+
+                var draggingIndex = Array.from(list.children).indexOf(draggingElement);
+                var itemIndex = Array.from(list.children).indexOf(item);
+
+                // 放置在正确的位置
+                if (draggingIndex < itemIndex) {
+                    list.insertBefore(draggingElement, item.nextSibling);
+                }
+                else {
+                    list.insertBefore(draggingElement, item);
+                }
+
+                // 清除hover和dragging样式
+                list.querySelectorAll('.hover').forEach(function (element) {
+                    element.classList.remove('hover');
+                });
+                list.querySelectorAll('.dragging').forEach(function (element) {
+                    element.classList.remove('dragging');
+                });
+                // 更新列表
+                updateOrderDisplay();
+                console.log("列表已更新=" + getOrder());
+            }
+
+
+        });
+
+        // 拖拽结束
+        list.addEventListener('dragend', function (e) {
+            list.querySelectorAll('.dragging').forEach(function (element) {
+                element.classList.remove('dragging');
+            });
+        });
+
+        resetButton.addEventListener('click', function () {
+            resetList();
+            updateOrderDisplay();
+            console.log("列表已重置=" + originalOrder);
+        });
+
+        function getOrder(){
+            return Array.from(list.children).map(function (element) {
+                return element.textContent;
+            }).join(',');
+        }
+        
+        function updateOrderDisplay() {
+
+            orderDisplay.textContent = '当前顺序=' + getOrder();
+        }
+
+        function resetList() {
+            list.innerHTML = "";
+            originalOrder.forEach(function (value) {
+                var li = document.createElement('li');
+                li.draggable = true;
+                li.dataset.value = value;
+                li.textContent = value;
+                list.appendChild(li);
+            });
+        }
+
+    </script>
+</body>
+
+</html>

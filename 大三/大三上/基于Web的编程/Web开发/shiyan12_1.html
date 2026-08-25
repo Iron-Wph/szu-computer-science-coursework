@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>英雄快跑</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button {
+            display: block;
+            padding: 10px;
+            background-color: #2196f3;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 3px;
+            margin: 2px auto;
+            cursor: pointer;
+        }
+
+        .info {
+            margin: 10px 0;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .info .info-box {
+            display: flex;
+            justify-content: center;
+            margin: 0 10px;
+            gap: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>英雄快跑</h1>
+    <div class="info">
+        <div class="info-box">
+            <p>坚持时间：<span id="timeCounter">0</span> 秒</p>
+            <p>历史最佳时间：<span id="bestTime">0</span> 秒</p>
+        </div>
+        <div class="info-box">
+            <button id="startButton">开始游戏</button>
+        </div>
+    </div>
+    <!-- TODO 通过标签属性设置宽高 800*300 -->
+    <canvas id="gameCanvas" width="800" height="300"></canvas>
+
+
+    <script>
+        class JumpPitGame {
+            constructor() {
+                this.canvas = document.getElementById("gameCanvas");
+                this.ctx = this.canvas.getContext("2d");
+                this.startButton = document.getElementById("startButton");
+                this.timeCounterElement = document.getElementById("timeCounter");
+                this.bestTimeElement = document.getElementById("bestTime");
+                this.status = "ready"; // 游戏状态：ready, running, over
+
+                // 计时器
+                this.timeCounter = 0;
+                this.bestTime = 0;
+                this.timerInterval = null;
+
+                // 角色属性
+                this.player = {
+                    x: 50,
+                    y: 250,
+                    width: 20,
+                    height: 20,
+                    velocityY: 0, // 垂直速度
+                    gravity: 1, // 重力
+                    jumpStrength: -15, // 跳跃力量,一旦跳起,垂直速度就是这个值
+                    onGround: true, // 是否在地面上
+                };
+
+                // 坑洞数据
+                this.pits = [];
+                this.pitWidthRange = [30, 50]; // 坑宽范围
+                this.pitCount = 5; // 初始坑洞数量
+                this.groundSpeed = 2; // 地面移动速度
+
+                // 游戏时间管理
+                this.frameID = null;
+
+                // TODO: 绑定事件（点击按钮开始游戏startGame，空格跳跃handleJump）
+                this.startButton.addEventListener('click', this.startGame.bind(this));
+                document.addEventListener('keydown', this.handleJump.bind(this));
+
+                // TODO: 加载最佳时间
+                this.loadBestTime();
+                // Other: 角色图片、当前图片的索引、帧计数器...
+                this.images = [];
+                this.imageIndex = 0;
+                this.frame = 0;
+                // 加载角色图片
+                const imagesource = [
+                    "http://172.31.233.204/resource/img/exp10/player1.png",
+                    "http://172.31.233.204/resource/img/exp10/player2.png",
+                    "http://172.31.233.204/resource/img/exp10/player3.png",
+                    "http://172.31.233.204/resource/img/exp10/player4.png"
+                ];
+
+                imagesource.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                    this.images.push(img);
+                });
+            }
+
+            // 初始化游戏
+            initGame() {
+                // TODO: 重置status
+                this.status = "ready";
+                // 重置坑洞状态
+                this.pits = this.generateInitialPits(180);
+                // TODO: 重置角色状态(y, velocityY, onGround )
+                this.player.y = 250;
+                this.player.velocityY = 0;
+                this.player.onGround = true;
+                // 重置计时器
+                this.timeCounter = 0;
+                this.updateTimer();
+
+                // Other: 首次渲染角色, 由于图片加载是异步的，所以需要在图片加载完成后再渲染
+                const firstImage = this.images[0];
+                firstImage.onload = () => {
+                    this.ctx.drawImage(firstImage, this.player.x, 
+                    this.player.y, this.player.width, this.player.height);
+                };
+                // 加载最佳时间并显示到页面上。
+                game.loadBestTime();
+                // 渲染页面
+                this.render();
+            }
+
+            // 开始游戏
+            startGame() {
+                if (this.status === "running") return;
+                this.initGame();
+                this.status = "running";
+                // TODO 隐藏开始按钮 startButton
+                this.startButton.style.display = "none";
+
+                // 启动计时器
+                this.startTimer();
+                this.gameLoop();
+            }
+
+            // 启动计时器
+            startTimer() {
+                this.stopTimer(); // 确保之前的计时器清理干净
+                this.timerInterval = setInterval(() => {
+                    this.timeCounter++;
+                    this.updateTimer();
+                }, 1000); // 每秒增加 1
+            }
+
+            // 停止计时器
+            stopTimer() {
+                if (this.timerInterval) {
+                    // TODO: 清除之前的计时器 timerInterval 并且置null
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+            }
+
+            // 更新计时器显示
+            updateTimer() {
+                this.timeCounterElement.textContent = this.timeCounter;
+            }
+
+            // TODO 保存最佳时间到localStorage
+            saveBestTime() {
+                // 使用localStorage保存数据
+                localStorage.setItem("bestTime", this.bestTime.toString());
+            }
+
+            // TODO 加载最佳时间并显示到页面上
+            loadBestTime() {
+                const bestTime = localStorage.getItem("bestTime");
+                if (bestTime) {
+                    this.bestTime = parseInt(bestTime);
+                    this.bestTimeElement.textContent = this.bestTime;
+                }
+            }
+
+            // TODO: 更新最佳时间显示
+            updateBestTime() {
+                this.bestTimeElement.textContent = this.bestTime;
+            }
+
+            // 生成初始坑洞
+            generateInitialPits() {
+                const pits = [];
+                let currentX = 310; // 从画布中偏右开始生成(不要改动我)
+                for (let i = 0; i < this.pitCount; i++) {
+                    const pitWidth =
+                        Math.random() * (this.pitWidthRange[1] - this.pitWidthRange[0]) +
+                        this.pitWidthRange[0];
+                    pits.push({ x: currentX, width: pitWidth });
+                    currentX += pitWidth + 150; // 坑之间的间距
+                }
+                return pits;
+            }
+
+            // TODO: 利用最后一个坑洞，向右随机偏移之后 生成新坑洞（可参考上面的）
+            generateNewPit() {
+                // Tip: 加点随机性，不要生成太宽或太窄的坑洞
+                const lastPit = this.pits[this.pits.length - 1];
+                // 随机生成坑洞宽度
+                const newPitWidth = Math.random() * (this.pitWidthRange[1] - this.pitWidthRange[0]) +
+                    this.pitWidthRange[0];
+                // 确保足够的间距
+                const newPitX = lastPit ? lastPit.x + lastPit.width + 150 : 180;
+                return { x: newPitX, width: newPitWidth };
+            }
+
+            // 渲染游戏
+            render() {
+                const ctx = this.ctx;
+                // 清空画布
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                // TODO: 绘制背景
+                ctx.fillStyle = "lightblue";
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                // TODO: 绘制地面
+                ctx.fillStyle = "green";
+                ctx.fillRect(0, 270, this.canvas.width, 30);
+                // TODO: 遍历pits绘制坑洞
+                this.pits.forEach((pit) => {
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(pit.x, 270, pit.width, 30);
+                });
+                // TODO: 绘制角色
+                // ctx.fillStyle = "red";
+                // ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+                // const currentImage = this.images[this.imageIndex];
+                ctx.drawImage(this.images[this.imageIndex], this.player.x, 
+                this.player.y, this.player.width, this.player.height);
+            }
+
+            // 游戏主循环
+            gameLoop() {
+                if (this.status !== "running") return;
+
+                // 更新角色位置
+                this.updatePlayer();
+
+                // 更新角色图片帧
+                this.updatePlayerImageFrame();
+
+                // 更新坑洞位置
+                this.updatePits();
+
+                // 检查碰撞
+                if (this.checkCollision()) {
+                    this.gameOver();
+                    return;
+                }
+
+                // 渲染游戏
+                this.render();
+
+                // 循环(感兴趣的同学可以了解下requestAnimationFrame)
+                this.frameID = requestAnimationFrame(() => this.gameLoop());
+            }
+
+            // Other: 更新角色图片帧
+            updatePlayerImageFrame() {
+                this.frame++;
+                if (this.frame % 20 === 0) { // 每20帧切换一次图片
+                    this.imageIndex = (this.imageIndex + 1) % this.images.length;
+                }
+                this.ctx.drawImage(this.images[this.imageIndex], this.player.x, this.player.y, this.player.width, this.player.height);
+            }
+
+            // TODO: 更新角色位置
+            updatePlayer() {
+                // TODO: 更新垂直位置(y坐标增加y方向的速度, y方向的速度增加重力)
+                this.player.y += this.player.velocityY;
+                this.player.velocityY += this.player.gravity;
+            
+                // TODO 检测是否在地面上 (大于250则将y设置成250(地面). velocityY, onGround )
+                // tip:y越大,越靠下
+                if (this.player.y >= 250) {
+                    this.player.y = 250;
+                    this.player.velocityY = 0;
+                    this.player.onGround = true;
+                }
+            }
+
+            // TODO: 更新坑洞位置 所有的pits向左移动(x减去地面的移动速度)，超出画布的坑洞就移除，同时添加新的坑洞
+            updatePits() {
+                this.pits.forEach((pit) => {
+                    pit.x -= this.groundSpeed; // 坑洞向左移动
+                });
+
+                // TODO: 超出画布的坑洞移除, 同时新增
+                for (let i = 0; i < this.pits.length; i++) {
+                    if (this.pits[i].x + this.pits[i].width < 0) {
+                        this.pits.splice(i, 1);
+                        // 生成新的坑洞
+                        const newPit = this.generateNewPit();
+                        this.pits.push(newPit);
+                    }
+                }
+            }
+
+            // 处理跳跃
+            handleJump(event) {
+                // TODO: 判断逻辑:空格起跳 & 在地面上 & 游戏进行中
+                if (event.code === "Space" && this.player.onGround && this.status === "running") {
+                    this.player.velocityY = this.player.jumpStrength;
+                    this.player.onGround = false;
+                }
+            }
+
+            // TODO 检查碰撞: 判断角色是否与任一坑洞发生碰撞 碰撞 return true
+            checkCollision() {
+                // 遍历pits数组
+                for (let pit of this.pits) {
+                    // 判断碰撞
+                    if (this.player.x < pit.x + pit.width && this.player.x + this.player.width > pit.x) {
+                        if (this.player.y + this.player.height >= 270) {
+                            // 接触地面
+                            return true;
+                        }
+                    }
+                }
+                return false; // 要是一直false就无敌了...
+            }
+
+            // 游戏结束
+            gameOver() {
+                // TODO 修改status
+                this.status = "over";
+                cancelAnimationFrame(this.frameID); // 取消动画帧
+                this.stopTimer(); // 停止计时器
+                // TODO 更新&保存最佳时间 
+                if (this.timeCounter > this.bestTime) {
+                    this.bestTime = this.timeCounter;
+                    this.saveBestTime();
+                    this.updateBestTime();
+                }
+                // TODO alert 提示坚持时间
+                alert(`游戏结束！坚持时间：${this.timeCounter} 秒`);
+                // TODO 重新展示startButton
+                this.startButton.style.display = "inline-block";
+            }
+        }
+
+
+        // 初始化游戏
+        const game = new JumpPitGame();
+        game.initGame();
+
+        // 挂载全局对象（校验需要）
+        window.game = game;
+    </script>
+</body>
+
+</html>

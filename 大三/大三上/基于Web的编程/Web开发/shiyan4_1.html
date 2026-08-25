@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录页面</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            transition: box-shadow 0.3s;
+        }
+
+        form:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #66afe9;
+            outline: none;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        
+        input[type="checkbox"]+label {
+            display: inline-block;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        section {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <h1>登录页面</h1>
+    <form action="">
+        <div>
+            <label for="username">用户名:</label>
+            <input type="text" id="username" placeholder="请输入用户名" required="required" maxlength="20">
+        </div>
+        
+        <div>
+            <label for="password">密码:</label>
+            <input type="password" id="password" placeholder="请输入密码" required="required" maxlength="20">
+        </div>
+        
+        <div>
+            <label for="remember"><input type="checkbox" id="remember">记住密码</label>
+        </div>
+        
+        <div>
+            <button type="submit">登录</button>
+        </div>
+
+    </form>
+</body>
+</html>

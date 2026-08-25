@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebWorker 质数计算实验</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        #progress {
+            margin: 20px auto;
+            font-size: 18px;
+            color: #555;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #007BFF;
+        }
+
+        #container {
+            margin-top: 30px;
+            border: 1px solid #ccc;
+            position: relative;
+            width: 100%;
+            height: 250px;
+        }
+
+        .circle {
+            position: absolute;
+            top: 40px;
+            width: 50px;
+            height: 50px;
+            /* TODO: 设置背景色为蓝色（blue），圆形（border-radius） */
+            background-color: blue;
+            border-radius: 50%;
+
+        }
+
+        /* 第二个的circle top */
+        .circle:nth-child(2) {
+            top: 110px;
+        }
+
+        /* 第三个的circle top */
+        .circle:nth-child(3) {
+            top: 180px;
+        }
+
+        hr {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>利用 WebWorker 计算质数数量</h1>
+    <div>
+        <label for="start">输入范围起始：</label>
+        <input type="number" id="start" value="1" />
+        <label for="end">输入范围结束：</label>
+        <input type="number" id="end" value="1000000" />
+        <button id="startButton">开始计算</button>
+    </div>
+
+    <div id="progress">等待开始计算...</div>
+    <div id="result"></div>
+
+    <hr />
+
+    <h2>UI 动态效果展示（平移动画）</h2>
+    <div id="container">
+        <div id="circle1" class="circle"></div>
+        <div id="circle2" class="circle"></div>
+        <div id="circle3" class="circle"></div>
+    </div>
+
+    <button id="startAnimationButton">开始动画</button>
+
+    <script>
+        let isRunning = false;
+        let stopRequested = false; // 标记停止请求
+        let circlePositions = [0, 0, 0]; // 保存每个球的当前水平位置
+        let intervalIds = []; // 保存每个球的计时器ID
+        let worker;             // 工作线程
+
+        // 启动按钮的点击事件
+        // TODO 优化计算质数的逻辑，放入worker.js中，随后进行onMessage、postMessage的交互。
+        // tip: worker也可以传输一个自定义的对象，可以增加一些字段属性用于表示是过程还是结果、或者用于表示具体内容。
+        // 参考学习：https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Using_web_workers#web_worker_api
+        document.getElementById("startButton").addEventListener("click", () => {
+            const start = parseInt(document.getElementById("start").value, 10);
+            const end = parseInt(document.getElementById("end").value, 10);
+            if (
+                isNaN(start) ||
+                isNaN(end) ||
+                start <= 0 ||
+                end <= 0 ||
+                end < start
+            ) {
+                alert("请输入有效的范围！");
+                return;
+            }
+
+            // 销毁之前的线程
+            if (worker) {
+                worker.terminate();
+            }
+
+            worker = new Worker("worker.js"); // 创建worker线程
+
+            // worker接收数据回调
+            worker.onmessage = function (event) {
+                if (event.data.type === 'result') {
+                    document.getElementById("progress").textContent = "计算完成！";
+                    document.getElementById("result").textContent = `范围内的质数数量是：${event.data.count}`;
+                    // 销毁线程
+                    worker.terminate();
+                } else if (event.data.type === 'progress') {
+                    document.getElementById("progress").textContent = `正在计算：${event.data.count}`;
+                }
+            }
+
+            document.getElementById("progress").textContent = "正在计算，请稍候...";
+            document.getElementById("result").textContent = "";
+
+            // 向worker发送消息
+            worker.postMessage({ start, end });
+        });
+
+        // TODO 平移动画 只需要修重新点击开始动画后的重置bug，但是不要改移动的逻辑。校验将会测试小球的left属性判定位置移动情况。
+        function startAnimation() {
+            const circles = [
+                document.getElementById("circle1"),
+                document.getElementById("circle2"),
+                document.getElementById("circle3"),
+            ];
+            // 清空之前的周期计时器
+            intervalIds.forEach((id) => {
+                clearInterval(id);
+            });
+            intervalIds = [];   // 重置计时器ID
+
+            circles.forEach((circle, index) => {
+                let position = 0;
+                circlePositions[index] = 0; // 重置位置
+                const interval = setInterval(() => {
+                    // 每次动画开始时重新设置位置
+                    if (position > window.innerWidth) {
+                        circle.style.left = `${window.innerWidth}px`; // 设置静止在右侧
+                        clearInterval(interval); // 动画结束时停止...
+                    } else {
+                        position += 1;
+                        circle.style.left = `${position}px`;
+                        circlePositions[index] = position; // 更新球的位置
+                    }
+                }, 5);
+
+                // 压入每个计时器的ID
+                intervalIds.push(interval);
+            });
+        }
+
+        // 控制动画的重置
+        document
+            .getElementById("startAnimationButton")
+            .addEventListener("click", () => {
+                const circles = [
+                    document.getElementById("circle1"),
+                    document.getElementById("circle2"),
+                    document.getElementById("circle3"),
+                ];
+                circles.forEach((circle) => {
+                    circle.style.left = "0px";
+                });
+                startAnimation(); // 重新开始动画
+            });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评论区</title>
+    <style>
+        /* 页面整体样式 */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 评论区样式 */
+        div {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 10px auto;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        b {
+            color: #333;
+        }
+
+        hr {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        /* 表单样式 */
+        form {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        fieldset {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        legend {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 0 10px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        /* 复选框样式 */
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>评论区</h1>
+
+    <h2>已有评论</h2>
+    <div>
+        <p><b>用户1：</b>这是一个非常有趣的帖子！</p>
+        <p><b>用户2：</b>我完全同意上面的评论。</p>
+        <p><b>用户3：</b>感谢分享这个内容！</p>
+    </div>
+
+    <hr>
+
+    <form action="/submit-comment" method="post">
+        <fieldset>
+            <legend>提交新评论</legend>
+
+            <label for="username">昵称:</label>
+            <input type="text" id="username" placeholder="请输入用户名" required="required" maxlength="10">
+
+
+            <label for="comment">评论内容:</label>
+            <textarea id="comment" placeholder="请输入评论内容" required="required" maxlength="500"></textarea>
+
+            <label for="category">评论类别:</label>
+            <select id="category">
+                <option value="1">问题</option>
+                <option value="2">建议</option>
+                <option value="3">反馈</option>
+            </select>
+
+            <label for="age_confirm"><input type="checkbox" id="age_confirm" required="required">我确认我是18岁以上</label>
+
+            <input type="submit" value="提交评论">
+        </fieldset>
+    </form>
+
+</body>
+
+</html>

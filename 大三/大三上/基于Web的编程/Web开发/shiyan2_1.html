@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程时间表</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #90003D;
+            margin-top: 20px;
+        }
+        td {
+            word-wrap: break-word;
+        }
+    </style>
+
+</head>
+<body>
+    <h2 class="title">我的课程表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">时段</th>
+                <th rowspan="2">节次</th>
+                <th rowspan="2">时间</th>
+                <th colspan="7">星期</th>
+            </tr>
+            <tr>
+                <th>周一</th>
+                <th>周二</th>
+                <th>周三</th>
+                <th>周四</th>
+                <th>周五</th>
+                <th>周六</th>
+                <th>周日</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="5">上午</td>
+                <td>第一节</td>
+                <td>8:30 – 9:10</td>
+                <td></td>
+                <td rowspan="2">软件工程-01<br>1-17周1-2节<br>致理楼L1-503<br>吴旭东</td>
+                <td rowspan="2">数据库系统-01<br>1-17周1-2节<br>致理楼L1-601<br>马里佳</td>
+                <td></td>
+                <td rowspan="2">计算机系统(3)-02<br>1-17周1-2节<br>致理楼L603<br>周明洋</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第二节</td>
+                <td>9:15 – 9:55</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第三节</td>
+                <td>10:15 – 10:55</td>
+                <td></td>
+                <td rowspan="2">软件工程-01<br>1-17周3-4节<br>致腾楼318<br>吴旭东</td>
+                <td rowspan="2">数据库系统-01<br>1-17周3-4节<br>致腾楼327<br>马里佳</td>
+                <td></td>
+                
+                <td rowspan="2">计算机系统(3)-02<br>1-17周3-4节<br>致腾楼326<br>周明洋</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第四节</td>
+                <td>11:00 – 11:40</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第五节</td>
+                <td>11:45 – 12:25</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td rowspan="5">下午</td>
+                <td>第六节</td>
+                <td>13:30 – 14:10</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第七节</td>
+                <td>14:15 – 14:55</td>
+                <td></td>
+                <td rowspan="2">计算机图形学-01<br>1-17周7-8节<br>致理楼L1-403<br>吕辰雷</td>
+                <td></td>
+                <td rowspan="2">基于Web的编程-01<br>1-17周7-8节<br>致理楼L1-601<br>蔡树彬</td>
+                <td rowspan="2">计算机安全导论-02<br>1-17周7-8节<br>致理楼L1-603<br>林秋镇</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第八节</td>
+                <td>15:00 – 15:40</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第九节</td>
+                <td>16:00 – 16:40</td>
+                <td></td>
+                <td rowspan="2">计算机图形学-01<br>1-17周9-10节<br>致腾楼324<br>吕辰雷</td>
+                <td></td>
+                <td rowspan="2">基于Web的编程-01<br>1-17周9-10节<br>致腾楼322<br>蔡树彬</td>
+                <td rowspan="2">计算机安全导论-02<br>1-17周9-10节<br>致腾楼318<br>林秋镇</td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>第十节</td>
+                <td>16:45 – 17:25</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td rowspan="2">晚上</td>
+                <td>第十一、十二节</td>
+                <td>19:00 – 20:20</td>
+                <td></td>
+                <td rowspan="4">智能识别系统设计-01<br>1-17周11-14节<br>致理楼328<br>沈琳琳,文嘉俊</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>第十三、十四节</td>
+                <td>20:30 – 21:45</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

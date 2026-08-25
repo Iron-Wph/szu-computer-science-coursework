@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深圳大学内部网</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f8ff;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        td {
+          vertical-align: top;
+        }
+        h2 {
+          color: #b22222;
+        }    
+        .main-table {
+          border: 1px solid #ccc;
+        }    
+        .block-table {
+          width: 100%;
+          border-collapse: collapse;
+        }    
+        .block-table th, .block-table td {
+          border: 1px solid #ccc;
+          padding: 10px;
+          text-align: left;
+        }    
+        .footer {
+          text-align: center;
+          margin-top: 20px;
+          color: #666;
+          font-size: 12px;
+        }    
+        .logo-cell {
+          background-color: #950040; /* 设置背景颜色 */
+          text-align: center;
+        }    
+        .block-table td, .block-table th {
+          width: 25%; /* 将每个单元格设为四等分 */
+        }
+      </style>
+    
+</head>
+<body>
+    <table class="main-table">
+        <tr height="155">
+            <td class="logo-cell">
+                <img src="https://www1.szu.edu.cn/images/szu.png" alt="深圳大学校徽" border="0">
+            </td>
+            <td style="background-image: url('https://www1.szu.edu.cn/images/index/202307043.jpg');">
+             <!-- 背景图片区域 -->
+            </td>
+        </tr>
+      
+
+        <tr>
+            <td width="50%">
+                <h2>校园公文通</h2>
+                <form action="#">
+                    <label for="users">阅览用户</label>
+                    <select id="users" name="users">
+                        <option value="1">1. 党委办公室</option>
+                        <option value="2">2. 校长办公室</option>
+                        <option value="3">3. 人事处</option>
+                        <option value="4">4. 财务处</option>
+                        <option value="5">5. 教务处</option>
+                        <option value="6">6. 研究生院</option>
+                        <option value="7">7. 国际交流处</option>
+                        <option value="8">8. 学生工作部</option>
+                        <option value="9">9. 后勤管理处</option>
+                        <option value="10">10. 保卫处</option>
+                    </select>
+                    <button type="submit">进入公文通</button>
+                </form>
+                <h3>重要通知</h3>
+                <ul>
+                    <li>学习贯彻党的二十大精神</li>
+                    <li>2024国家网络安全宣传周</li>
+                    <li>校党委为全新的诉求反馈平台</li>
+                </ul>
+            </td>
+
+            <td width="50%">
+                <h3>服务板块</h3>
+                <table class="block-table">
+                    <tr>
+                        <th>教师事务</th>
+                        <th>学生事务</th>
+                        <th>荔园生活</th>
+                        <th>网上服务</th>
+                    </tr>
+                    <tr>
+                        <td>办事大厅</td>
+                        <td>UOOC课程</td>
+                        <td>学科竞赛</td>
+                        <td>图书馆</td>
+                    </tr>
+                    <tr>
+                        <td>OA系统</td>
+                        <td>学生邮箱</td>
+                        <td>创新创业</td>
+                        <td>信息服务</td>
+                    </tr>
+                    <tr>
+                        <td>教研工作</td>
+                        <td>本科生成绩</td>
+                        <td>工会活动</td>
+                        <td>校友信箱</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <footer class="footer">
+        <p>深大新闻网 | 公文通 | OA系统 | 院系设置 | 职能部门 | 教师事务 | 学生事务 | 荔园生活 | 网上服务 | 教工区上网 | 网速测试</p>
+        <p>版权所有©深圳大学信息中心</p>
+    </footer>
+</body>
+</html>

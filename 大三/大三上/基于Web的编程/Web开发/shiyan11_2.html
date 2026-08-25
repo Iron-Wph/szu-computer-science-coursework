@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>任务清单</title>
+    <link rel="stylesheet" href="http://172.31.233.204/resource/css/exp9/9-2.css">
+</head>
+
+<body>
+    <h1>任务清单</h1>
+    <input type="text" id="task-input" placeholder="输入新任务">
+    <button id="add-task">添加任务</button>
+    <ul id="task-list"></ul>
+
+    <script>
+        var add = document.getElementById('add-task');
+
+        add.addEventListener('click', function () {
+            // 实时获取输入和任务列表
+            var list = document.getElementById('task-list');
+            var shuru = document.getElementById('task-input');
+
+            // 输入为空则输出警告
+            var shurutext = shuru.value.trim();
+            if (shurutext === '')
+                alert('任务内容不能为空');
+            else {
+                //创建新元素
+                var newtask = document.createElement('li');
+                var newspan = document.createElement('span');
+                var newbutton = document.createElement('button');
+                // 设置元素的文本
+                newbutton.innerHTML = '删除';
+                newspan.innerHTML = shuru.value;
+                shuru.value = '';       // 清空输入框的内容
+                // 添加任务
+                newtask.appendChild(newspan);
+                newtask.appendChild(newbutton);
+                list.appendChild(newtask);
+
+                console.log('添加任务: '+newspan.innerHTML);
+
+                // 添加事件监听器
+                newspan.addEventListener('click', function () {
+                    // 修改下划线样式
+                    this.style.textDecoration = this.style.textDecoration === 'line-through' 
+                    ? 'none' : 'line-through';
+                });
+
+                newbutton.addEventListener('click', function () {
+                    // 删除任务
+                    list.removeChild(newtask);
+                    console.log('删除任务: '+newspan.innerHTML);
+                });
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>

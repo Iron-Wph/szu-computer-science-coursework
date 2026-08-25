@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的学习</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* TODO 基于实验要求补充CSS */
+        .site-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            line-height: 80px;
+            background-color: #2196F3;
+            z-index: 1000;
+        }
+
+        .logo {
+            float: left;
+            color:white;
+        }
+
+        .nav-list {
+            display: flex;
+            justify-content: flex-end;
+            align-content: center;
+            list-style: none;
+        }
+
+        .nav-item a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 15px 5px 15px;
+            border-radius: 3px;
+        }
+
+        .nav-item a:hover {
+            transition: background-color 0.3s;
+            background-color: #1976D2;
+        }
+
+
+        .main-container {
+            display: flex;
+            margin-top: 80px;
+        }
+
+        @media(max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .side-menu {
+                width: 100%;
+            }
+        }
+
+        .side-menu {
+            width: 200px;
+            padding: 10px;
+            height: calc(100vh - 80px - 60px);
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 80px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .site-footer {
+            background-color: #2196F3;
+            text-align: center;
+            color: white;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+
+
+        /* 侧边栏列表样式 */
+        .side-menu-list {
+            list-style: none;
+            /* 去掉列表样式 */
+        }
+
+        /* 侧边栏项样式 */
+        .side-menu-item {
+            margin: 10px 0;
+            /* 每项之间的间距 */
+        }
+
+        /* 鼠标悬停时的样式 */
+        .side-menu-item a:hover {
+            background-color: #c6bbbb;
+        }
+
+        /* 侧边栏链接样式 */
+        .side-menu-item a {
+            display: block;
+            text-decoration: none;
+            color: #333;
+            padding: 10px;
+            transition: background-color 0.3s;
+        }
+
+        /* 激活菜单项样式 */
+        .side-menu-item.active a {
+            background-color: #c6bbbb;
+            /* 激活时的背景色 */
+            color: #000;
+            /* 可选：改变字体颜色 */
+        }
+
+
+
+        .module-items {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media(max-width: 768px) {
+            .side-menu{
+                width:100%;
+                height: auto;
+                margin-bottom: 20px;
+            }
+            .module-items{
+                max-width:30%;
+            }
+        }
+
+        .module-item {
+            min-width: 200px;
+            flex: 1 1 200px;
+            /* 设置最小宽度 */
+        }
+
+        .module-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .module-title {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .module-description {
+            color: #666;
+        }
+
+        .module-btn {
+            width: 100%;
+            background-color: #2196F3;
+        }
+
+        .module-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .toolkit {
+            position: fixed; /* 固定定位 */
+            bottom: 50%;
+            right: 0; /* 右侧距离 */
+            transform: translateY(50%); /* 垂直居中 */
+        }
+
+        .toolkit-list {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-left: 8px;
+            padding-right: 8px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .toolkit-item a {
+            text-decoration: none;
+            display: block;
+            width: 100%;   
+        }
+
+
+        .toolkit-item img {
+            width: 40px;
+            margin-bottom: 0%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="site-header">
+        <div class="logo">我的学习</div>
+        <nav class="fruit-nav">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#">主页</a></li>
+                <li class="nav-item"><a href="#">课程</a></li>
+                <li class="nav-item"><a href="#">笔记</a></li>
+                <li class="nav-item"><a href="#">工具</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 侧边菜单 -->
+        <aside class="side-menu">
+            <!-- TODO 补充下面的HTML结构  -->
+            <!-- `.side-menu` 内部为 `.side-menu-list` 列表项 `.side-menu-item`，每项包含指向页面的链接 `<a>`。 -->
+            <ul class="side-menu-list">
+                <li class="side-menu-item"><a href="#">个人资料</a></li>
+                <li class="side-menu-item"><a href="#">设置</a></li>
+                <li class="side-menu-item"><a href="#">帮助</a></li>
+                <li class="side-menu-item"><a href="#">反馈</a></li>
+            </ul>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <section class="module-items">
+                <div class="module-item">
+                    <div class="module-info">
+                        <h3 class="module-title">HTML 基础</h3>
+                        <p class="module-description">了解 HTML 的基本语法和结构。</p>
+                        <button class="module-btn">开始学习</button>
+                    </div>
+                </div>
+                <!-- 你可以增多一些卡片项 .module-item  -->
+                <div class="module-item">
+                    <div class="module-info">
+                        <h3 class="module-title">CSS 入门</h3>
+                        <p class="module-description">掌握 CSS 的基本用法。</p>
+                        <button class="module-btn">开始学习</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 工具栏 -->
+        <div class="toolkit">
+            <ul class="toolkit-list">
+                <li class="toolkit-item">
+                    <a href="#"><img src="http://172.31.233.204/resource/img/toolkit-chat.png" alt="工具1" /></a>
+                </li>
+                <li class="toolkit-item">
+                    <a href="#"><img src="http://172.31.233.204/resource/img/toolkit-write.png" alt="工具2" /></a>
+                </li>
+                <li class="toolkit-item">
+                    <a href="#"><img src="http://172.31.233.204/resource/img/toolkit-back.png" alt="工具3" /></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+        <p>版权所有 &copy; 2024 我的学习</p>
+    </footer>
+</body>
+
+</html>

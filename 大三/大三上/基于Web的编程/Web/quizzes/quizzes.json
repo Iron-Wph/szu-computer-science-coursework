@@ -1,0 +1,14 @@
+[
+    {
+        "id": "quiz1",
+        "title": "General Knowledge Quiz",
+        "description": "A quiz to test your general knowledge.",
+        "questions": ["q1", "q2", "q4"]
+    },
+    {
+        "id": "quiz2",
+        "title": "Physics Quiz",
+        "description": "A quiz on basic physics concepts.",
+        "questions": ["q3"]
+    }
+]

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星级评分系统</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .star-container {
+            display: inline-flex;
+            position: relative;
+        }
+
+        .star {
+            font-size: 40px;
+            color: gray;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .star .half, .star .full {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: gold;
+            overflow: hidden;
+            display: none; /* 初始状态不显示高亮 */
+        }
+
+        .half {
+            width: 50%; /* 半颗星宽度 */
+        }
+
+        .full {
+            width: 100%; /* 整颗星宽度 */
+        }
+
+        #rating-display {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        #reset-rating {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #reset-rating:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="star-container">
+        <span class="star" data-value="1">
+            ★<span class="half">★</span><span class="full">★</span>
+        </span>
+        <span class="star" data-value="2">
+            ★<span class="half">★</span><span class="full">★</span>
+        </span>
+        <span class="star" data-value="3">
+            ★<span class="half">★</span><span class="full">★</span>
+        </span>
+        <span class="star" data-value="4">
+            ★<span class="half">★</span><span class="full">★</span>
+        </span>
+        <span class="star" data-value="5">
+            ★<span class="half">★</span><span class="full">★</span>
+        </span>
+    </div>
+
+    <p id="rating-display">当前评分：0星</p>
+    <button id="reset-rating">重置评分</button>
+</div>
+
+<script>
+    // 这里开始写JS代码
+    // 获取元素
+    var stars = document.querySelectorAll('.star');
+    var ratingDisplay = document.getElementById('rating-display');
+    var resetButton = document.getElementById('reset-rating');
+    var currentRating = 0;          // 当前评分
+
+    // 函数定义
+    function calculateHoverRating(event, star) {
+        var pos = star.getBoundingClientRect();
+        var mouse_pos = event.clientX - pos.left;       // 鼠标相对于星星的位置
+        var star_width = star.offsetWidth;               // 星星的宽度
+        var half_width = star_width / 2;                 // 半颗星的宽度
+        var value = 0;                                  // 鼠标悬停时的评分
+        var starValue = parseInt(star.getAttribute('data-value'));
+        // 如果小于宽度的一半，则选择半颗星
+        var Rating = mouse_pos < half_width ? starValue - 0.5 : starValue;
+        return Rating;
+    }
+
+    function highlightStars(rating) {
+        stars.forEach(function(star) {
+            var starValue = parseInt(star.getAttribute('data-value'));
+            // 默认隐藏星星
+            star.querySelector('.full').style.display = 'none';
+            star.querySelector('.half').style.display = 'none';
+            // 如果小于当前评分，则全部显示星星
+            if (starValue <= rating) {
+                star.querySelector('.full').style.display = 'inline';
+            }
+             // 如果等于当前评分+0.5，则显示半颗星星
+            if (starValue === rating + 0.5) {
+                star.querySelector('.half').style.display = 'inline';
+            }
+        });
+    }
+
+    function updateRatingDisplay() {
+        ratingDisplay.textContent = '当前评分=' + currentRating + '星';
+    }
+
+    function resetStars() {
+        stars.forEach(function(star) {
+            star.querySelector('.full').style.display = 'none';
+            star.querySelector('.half').style.display = 'none';
+        });
+    }
+
+    //
+     // 为每个星星元素添加 mousemove 事件监听器
+     stars.forEach(function(star) {
+        star.addEventListener('mousemove', function(event) {
+            var rating = calculateHoverRating(event, star);
+            highlightStars(rating);
+        });
+    });
+
+    // 为每个星星元素添加 mouseout 事件监听器
+    stars.forEach(function(star) {
+        star.addEventListener('mouseout', function() {
+            highlightStars(currentRating);
+        });
+    });
+
+    // 为每个星星元素添加 click 事件监听器
+    stars.forEach(function(star) {
+        star.addEventListener('click', function(event) {
+            var rating = calculateHoverRating(event, star);
+            currentRating = rating;
+            updateRatingDisplay();
+            console.log('评分=' + currentRating);
+            highlightStars(currentRating);
+        });
+    });
+
+    // 为重置按钮添加 click 事件监听器
+    resetButton.addEventListener('click', function() {
+        currentRating = 0;
+        updateRatingDisplay();
+        resetStars();
+        console.log('评分已重置');
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+/* 选择器{ 属性名：属性值}  */
+div{
+    color: red;
+    font-size: 20px;
+}
+p{
+    color: blue;
+    font-size: 20px;
+}

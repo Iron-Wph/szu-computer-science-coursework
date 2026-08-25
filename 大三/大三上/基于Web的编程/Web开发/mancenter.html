@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SZU--个人主页</title>
+    <style>
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        .user-avatar {
+            height: 50px;
+            width: 50px;
+        }
+        .user-nickname {
+            margin-left: 8px;
+        }
+        
+        .wrapper {
+            display: flex;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background: #f4f4f4;
+            height: 100vh; /* Full height of the viewport */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        /* 添加一些样式以更好地显示个人信息 */
+        .personal-info {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .personal-info h2 {
+            margin-bottom: 10px;
+        }
+        /* 新增样式，让label和input在同一行 */
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .info-item label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .info-item input[type="text"],
+        .info-item input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            flex-grow: 1; /* 让input填充剩余空间 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 深圳大学的个人在线竞赛网站的个人主页设计 -->
+    <!-- 展示深大图标 -->
+    <div><img src="https://www1.szu.edu.cn/images/szu.png" alt="深圳大学校徽"></div>
+
+    <!-- 头像和个人昵称 -->
+    <div class="user-profile">
+        <img src="http://172.31.233.204/resource/img/exp1/zhangsan.jpg" alt="个人头像" class="user-avatar">
+        <p class="user-nickname">Iron_Wph</p>
+    </div>
+
+    <hr>
+
+    <!-- 左侧布局 -->
+    <div class="wrapper">
+        <div class="sidebar">
+            <p>个人信息</p>
+            <p>我的竞赛</p>
+            <p>我的团队</p>
+            <p>我的学习</p>
+            <p>荣誉资质</p>
+            <p>成长体系</p>
+            <p>我的消息</p>
+        </div>
+        <div class="content">
+            <!-- 创建个人信息提交表单 -->
+            <form action="">
+                <div class="personal-info">
+                    <h2>个人信息</h2>
+                    <div class="info-item">
+                        <label for="username">真实姓名：</label>
+                        <input type="text" id="username" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="gender">性别：</label>
+                        <input type="radio" name="gender" id="gender" required>男
+                        <input type="radio" name="gender" id="gender" required>女
+                    </div>
+
+                    <div class="info-item">
+                        <label for="birth-date">出生年月：</label>
+                        <input type="date" id="birth-date" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="age">年龄：</label>
+                        <input type="text" id="age" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="nationality">国籍：</label>
+                        <input type="text" id="nationality" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="identity">身份：</label>
+                        <input type="radio" name="identity" id="identity" required>学生
+                        <input type="radio" name="gender" id="identity" required>老师
+                        <input type="radio" name="identity" id="identity" required>中职、K12等
+                        <input type="radio" name="gender" id="identity" required>其他
+                    </div>
+
+                    <div class="info-item">
+                        <label for="motto">个性签名：</label>
+                        <input type="text" name="motto" id="moto">
+                    </div>
+
+                    <div class="info-item">
+                        <label for="education">学历：</label>
+                        <select name="education" id="education">
+                            <option value="1">本科</option>
+                            <option value="2">专科</option>
+                            <option value="3">硕士</option>
+                            <option value="4">博士</option>
+                            <option value="5">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="info-item">
+                        <label for="school">毕业院校：</label>
+                        <input type="text" id="school" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="graduate-date">毕业年月：</label>
+                        <input type="date" id="graduate-date" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="email">邮箱：</label>
+                        <input type="text" id="email" required>
+                    </div>
+
+                    <div class="info-item">
+                        <label for="phone">电话：</label>
+                        <input type="text" id="phone" required>
+                    </div>
+
+                    <div class="info-item">
+                        <button type="submit">保存</button>
+                    </div>
+                </div>
+
+                <!-- 这里可以添加更多的个人信息或者内容 -->
+            </form>
+        </div>
+    </div>
+</body>
+</html>

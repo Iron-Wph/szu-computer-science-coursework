@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+        body{
+            background: linear-gradient(to right, red, yellow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .business-card {
+            width: 300px;
+            height: 200px;
+            border-radius: 15px;
+            background-image: url('http://172.31.233.204/resource/img/email.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .business-card .name{
+            font-family: 'Arial Black', sans-serif;
+            color: black;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .business-card .position{
+            font-style: italic;
+            color: #808080;
+        }
+        .business-card .contact-info{
+            color: blue;
+            text-decoration: underline;
+        }
+        .business-card .contact-info:hover{
+            color: darkblue;
+        }
+        .business-card .social-icon{
+            cursor:pointer;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="business-card">
+      <div class="name">John Doe</div>
+      <div class="position">Web Designer</div>
+      <div class="contact-info">john@example.com</div>
+      <img src="http://172.31.233.204/resource/img/email.png" class="social-icon" />
+    </div>
+  </body>
+</html>
