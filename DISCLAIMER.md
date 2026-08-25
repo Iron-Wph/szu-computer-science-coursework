@@ -1,18 +1,11 @@
-# Disclaimer
+# 使用说明
 
-This repository is a personal learning archive. It is not affiliated with,
-endorsed by, or maintained by Shenzhen University.
+本仓库是个人课程学习归档，不代表深圳大学官方立场，也不由深圳大学维护。
 
-The material is provided for study, review, and reproducibility. Do not submit
-any part of it as your own coursework. Users are responsible for following the
-academic-integrity rules that apply to their institution and course.
+仓库内容用于学习、复习和课程实践参考。使用者应遵守所在学校和课程的学术诚信要求，不得将他人的作业、报告、代码或答案冒充为本人成果提交。
 
-Only material believed to be authored by the repository owner or redistributable
-under its existing terms is intended for publication. Obvious textbooks,
-instructor-only material, answer collections, private records, credentials, and
-large third-party datasets were filtered out before the initial publication.
-If a rights holder identifies material that should not be present, please open
-an issue with the path and supporting details so it can be reviewed promptly.
+仓库内的教师课件、试卷、试题及答案已由仓库维护者确认具备公开传播授权。第三方软件、商标、引用内容及自带许可文件的材料仍适用其各自条款。
 
-No warranty is provided for correctness, completeness, security, or fitness for
-any purpose.
+如权利人认为某项内容不应公开，可通过仓库议题提供文件路径和相关说明，以便及时核查处理。
+
+仓库内容不保证完全正确、完整或适用于特定用途。

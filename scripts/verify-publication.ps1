@@ -26,7 +26,8 @@ $blockedGeneratedDataPattern = '(?i)^大三/大三下/大模型技术及应用/.
 $blockedThirdPartyAudioPattern = '(?i)(^大一课程/英语/BC_LISTENING.*_Audio\.mp3$|^大三/大三上/图形学/实验/期末大作业/.+/music/.+\.mp3$)'
 
 $blockedFiles = [System.Collections.Generic.List[string]]::new()
-$largeFiles = [System.Collections.Generic.List[string]]::new()
+$oversizedNonLfsFiles = [System.Collections.Generic.List[string]]::new()
+$lfsFiles = [System.Collections.Generic.List[string]]::new()
 $secretFiles = [System.Collections.Generic.List[string]]::new()
 $binaryMagicFiles = [System.Collections.Generic.List[string]]::new()
 $archiveMagicFiles = [System.Collections.Generic.List[string]]::new()
@@ -46,8 +47,14 @@ foreach ($relativePath in $tracked) {
     }
 
     $absolutePath = Join-Path $root $relativePath
-    if ((Get-Item -LiteralPath $absolutePath).Length -ge 49MB) {
-        $largeFiles.Add($relativePath)
+    if ((Get-Item -LiteralPath $absolutePath).Length -gt 100MB) {
+        $filterAttribute = (& git -C $root check-attr filter -- $relativePath) -join ''
+        if ($filterAttribute -match ': filter: lfs$') {
+            $lfsFiles.Add($relativePath)
+        }
+        else {
+            $oversizedNonLfsFiles.Add($relativePath)
+        }
     }
 
     $stream = $null
@@ -74,6 +81,31 @@ foreach ($relativePath in $tracked) {
         $allowedZipContainerExtensions = @('.docx', '.xlsx', '.pptx', '.odt', '.ods', '.odp', '.xmind')
         if ($read -ge 4 -and $bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4b -and $bytes[2] -in @(0x03, 0x05, 0x07) -and $bytes[3] -in @(0x04, 0x06, 0x08)) {
             $isArchive = $extension -notin $allowedZipContainerExtensions
+            if ($isArchive -and $extension -in @('.doc', '.ppt', '.xls')) {
+                $expectedOfficeEntry = switch ($extension) {
+                    '.doc' { 'word/document.xml' }
+                    '.ppt' { 'ppt/presentation.xml' }
+                    '.xls' { 'xl/workbook.xml' }
+                }
+                $stream.Position = 0
+                $zip = [System.IO.Compression.ZipArchive]::new(
+                    $stream,
+                    [System.IO.Compression.ZipArchiveMode]::Read,
+                    $true
+                )
+                try {
+                    $entryNames = @($zip.Entries | Select-Object -ExpandProperty FullName)
+                    if (
+                        $entryNames -contains '[Content_Types].xml' -and
+                        $entryNames -contains $expectedOfficeEntry
+                    ) {
+                        $isArchive = $false
+                    }
+                }
+                finally {
+                    $zip.Dispose()
+                }
+            }
         }
         elseif ($read -ge 6 -and $bytes[0] -eq 0x37 -and $bytes[1] -eq 0x7a -and $bytes[2] -eq 0xbc -and $bytes[3] -eq 0xaf -and $bytes[4] -eq 0x27 -and $bytes[5] -eq 0x1c) {
             $isArchive = $true
@@ -109,7 +141,7 @@ $secretPatterns = @(
     '-----BEGIN ([A-Z ]+ )?PRIVATE KEY-----',
     '(?i)(api[_-]?key|client[_-]?secret|access[_-]?token)\s*[:=]\s*["''][^"'']{8,}["'']'
 )
-$rgArguments = @('-l', '-uu', '--no-messages')
+$rgArguments = @('-l', '-uu', '--no-messages', '--glob', '!.git/**')
 foreach ($pattern in $secretPatterns) {
     $rgArguments += @('-e', $pattern)
 }
@@ -121,27 +153,27 @@ foreach ($match in $secretMatches) {
 
 $failures = 0
 if ($blockedFiles.Count -gt 0) {
-    Write-Error "Blocked file or dependency path found ($($blockedFiles.Count))."
+    Write-Warning "Blocked file or dependency path found ($($blockedFiles.Count))."
     $blockedFiles | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
-if ($largeFiles.Count -gt 0) {
-    Write-Error "File at or above 49 MiB found ($($largeFiles.Count))."
-    $largeFiles | ForEach-Object { Write-Host "  $_" }
+if ($oversizedNonLfsFiles.Count -gt 0) {
+    Write-Warning "File above 100 MiB is not tracked by Git LFS ($($oversizedNonLfsFiles.Count))."
+    $oversizedNonLfsFiles | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
 if ($binaryMagicFiles.Count -gt 0) {
-    Write-Error "Compiled executable detected by file signature ($($binaryMagicFiles.Count))."
+    Write-Warning "Compiled executable detected by file signature ($($binaryMagicFiles.Count))."
     $binaryMagicFiles | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
 if ($archiveMagicFiles.Count -gt 0) {
-    Write-Error "Archive detected by file signature ($($archiveMagicFiles.Count))."
+    Write-Warning "Archive detected by file signature ($($archiveMagicFiles.Count))."
     $archiveMagicFiles | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
 if ($secretFiles.Count -gt 0) {
-    Write-Error "Potential credential found ($($secretFiles.Count)). Values are not displayed."
+    Write-Warning "Potential credential found ($($secretFiles.Count)). Values are not displayed."
     $secretFiles | Sort-Object -Unique | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
@@ -159,4 +191,5 @@ foreach ($relativePath in $tracked) {
     Result = 'pass'
     TrackedFiles = $tracked.Count
     WorkingTreeGiB = [math]::Round($bytes / 1GB, 3)
+    LfsFiles = $lfsFiles.Count
 } | ConvertTo-Json

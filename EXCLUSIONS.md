@@ -1,40 +1,15 @@
-# Initial publication exclusions
+# 未收录内容
 
-The source archive was inspected on 2026-08-25 before this public repository was
-created. The source contained 117,219 files totaling approximately 32.69 GiB.
-The automated copy and first cleanup retained 4,942 coursework files totaling
-approximately 2.78 GiB. A second content, privacy, license, and file-signature
-audit removed another 1,424 files. The final snapshot contains 3,518 coursework
-files totaling approximately 2.23 GiB; repository metadata adds nine small
-tracked files, for 3,527 tracked files overall.
+本仓库由本地课程归档筛选整理而成。2026 年 8 月 25 日，经授权补充收录了此前所有权待确认的 179 份文档，以及教师课件、课程演示文稿、试卷、试题和参考答案。
 
-| Category | Files excluded | Approx. size |
-| --- | ---: | ---: |
-| Dependency folders, build output, and IDE caches | 92,815 | 14.097 GiB |
-| Archives | 131 | 4.821 GiB |
-| Generated datasets and data assets | 13,699 | 2.941 GiB |
-| Model files, databases, and scientific datasets | 78 | 2.520 GiB |
-| Videos | 27 | 2.074 GiB |
-| Third-party course material | 3,561 | 2.133 GiB |
-| Unverified document ownership | 179 | 0.325 GiB |
-| Generated temporary files and binaries | 625 | 0.513 GiB |
-| Files at or above 49 MiB | 3 | 0.352 GiB |
-| Installers and executables | 358 | 0.062 GiB |
-| Private personal material | 65 | 0.036 GiB |
-| Nested Git metadata | 722 | 0.033 GiB |
-| Credentials and local secret files | 14 | 0.005 GiB |
-| Subsequent content, privacy, license, and signature audit | 1,424 | 0.553 GiB |
-| **Total excluded** | **113,701** | **about 30.46 GiB** |
+以下内容仍不收录：
 
-The automated categories are mutually exclusive according to the first matching
-filter rule. The subsequent-audit row covers files removed from that initial
-snapshot, so the final total can be added without double-counting. Excluded files
-remain only in the local source archive and are not release assets.
+- ZIP、RAR、7Z、TAR 等压缩包；
+- MP4、AVI、MOV、MKV 等视频文件；
+- EXE、MSI、APK、ISO 等安装包和可执行文件；
+- 虚拟环境、依赖目录、IDE 缓存和构建产物；
+- 大型数据集、模型权重、数据库和自动生成的数据；
+- API 密钥、本地环境文件、账号数据和私人材料；
+- 未经授权的教材、论文、音频及其他第三方内容。
 
-Two hard-coded API keys found in copied source were replaced with environment
-variable lookups before any Git commit. Mock-account passwords were replaced by
-an explicit `<demo-password>` placeholder, and five local account fixtures with
-names, identifiers, email addresses, or password fields were excluded. The final
-audit also detects compiled executables by file signature, including binaries
-without a filename extension. The original credentials should be rotated by
-their owner even though they were never committed here.
+源归档中的排除文件不会作为仓库发布内容或附件上传。
