@@ -1,0 +1,10 @@
+// 暴力法
+function baoli(n, e):
+    if e == 1:
+        return n
+    if n == 0 or n == 1:
+        return n
+    mint = INF
+    for i = 1 to n:
+        mint = min(mint, max(baoli(i-1, e-1), baoli(n-i, e)) + 1)
+    return mint

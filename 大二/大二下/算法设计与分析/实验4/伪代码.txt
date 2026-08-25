@@ -1,0 +1,98 @@
+// 暴力法
+function baoli(n, e):
+    // 只有一个鸡蛋，从低到高逐层试
+    if e == 1:
+        return n
+    // 只有0或1层楼
+    if n == 0 or n == 1:
+        return n
+    mint = INF
+    // 求解当前情况下的最坏情况
+    for i = 1 to n:
+        mint = min(mint, max(baoli(i-1, e-1), baoli(n-i, e)) + 1)
+    return mint
+
+// 二维数组
+function dp_2(n, e):
+    Array dp[n+1][e+1]      // 动态规划表
+    
+    // 边界条件设定
+    // 只有一个鸡蛋
+    for i = 0 to n: dp[i][1] = i
+    // 楼层为0或1
+    for i = 0 to e: dp[0][i] = 0;  dp[1][i] = 1
+
+    // 枚举所有情况
+    for i = 2 to n:
+        for j = 2 to e:
+            dp[i][j] = INF
+            // 遍历每一楼层
+            for k = 1 to i:
+                // 按照动态规划方程查表
+                dp[i][j] = min(dp[i][j], max(dp[k-1][j-1], dp[i-k][j]) + 1)
+    
+    return dp[n][e]
+
+// 一维数组
+function dp_1(n, e)
+{
+	Array a1[n+1], a2[n+1];             // 依次存储前一列与当前列的表
+    // 边界条件设定
+    for i = 0 to n: a1[i] = i; a2[i] = i;
+	// 按列进行填表
+    for j = 2 to e:
+        for i = 2 to n:
+            a2[i] = INF;
+            for k = 1 to i:
+                // 按照动态规划方程查表
+                a2[i] = min(a2[i], max(a1[k-1], a2[i-k])+1);
+        // 将当前列更新为前一列，为下一列计算做准备
+        for i = 2 to n: a1[i] = a2[i];
+
+	return a2[n];
+}
+
+// 二分法
+function erfen(n, e):
+    Array dp[n+1][e+1]                  
+    
+    // 边界条件
+    // 只有一个鸡蛋
+    for i = 0 to n: dp[i][1] = i
+    // 楼层为0或1
+    for i = 0 to e: dp[0][i] = 0；dp[1][i] = 1
+    
+    // 
+    for i = 2 to n:
+        for j = 2 to e:
+            dp[i][j] = INF
+            // 二分剪枝放鸡蛋，
+            left = 1  right = i
+            while left < right:
+                mid = (left + right + 1) / 2
+                br = dp[mid-1][j-1]  // 鸡蛋破碎
+                nbr = dp[i-mid][j]   // 鸡蛋没碎
+                if br > nbr:
+                    right = mid - 1
+                else:
+                    left = mid
+            dp[i][j] = max(dp[left-1][j-1], dp[i-left][j]) + 1
+    
+    return dp[n][e]
+
+
+// 数学等效
+function reverse(n, k) {
+    Array dp[k+1];
+    // 边界初始化
+    for i=0 to k: dp[i] = 0;
+    m = 0;  // 试验次数
+    while (dp[k] < n)
+    {
+        m++;
+        for i = k to 1:
+            // 动态规划状态转移方程
+        	dp[i] = dp[i] + dp[i - 1] + 1;
+    }
+    return m;
+}

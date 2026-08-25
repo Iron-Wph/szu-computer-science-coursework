@@ -1,0 +1,11 @@
+Array arr[n]   // 待求解的点集
+// 初始化最小距离为无穷大
+min = INF 
+// 计算第i个点与其后面的点的距离
+for i=0 to n-2:
+    for j=i+1 to n-1:
+        // 如果找到更小的距离则更新min
+        if min > distance(arr[i],arr[j]):
+            min = distance(arr[i],arr[j])
+
+          

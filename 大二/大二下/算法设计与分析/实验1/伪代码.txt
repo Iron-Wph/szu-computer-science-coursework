@@ -1,0 +1,89 @@
+// 冒泡排序
+Array arr(0, n)	//待排序的数组
+// 循环控制n-1趟
+for i = 0 to n-1
+	for j =0 to n-i-1
+	// 相邻不满足排序要求的数据
+		if arr[j] > arr[j+1]
+			// 数据交换排序
+			arr[j]<==>arr[j+1]
+end
+
+
+// 选择排序
+Array arr(0, n)		// 待排序的数组
+for i = 0 to n-2	// 进行n-1趟
+	k = i			
+	// 从i的位置往后查找当前最大/小的数据
+	for j = i+1 to n-1
+		// 保存符合条件的数据的位置
+		if arr[j] < arr[k]
+			k = j
+	// 更新第i大/小的数据
+	if k != i
+		arr[k] <==> arr[i]
+end
+
+
+// 插入排序
+Array arr(0, n)		// 待排序的数组
+// 遍历第2到最后一个数据
+for ( i = 1; i < n; i++ ) 
+	temp = arr[i]
+	// 将当前数据插入到前方合适的位置
+	for ( j = i;  j > 0; j-- ) 
+		//从后向前顺序比较，并依次后移
+		if ( temp < arr[j-1] ) 
+			arr[j] <==> arr[j-1]
+		else 
+			break
+	
+	arr[j] = temp;	
+
+end
+
+
+// 快速排序
+Array arr[l .. r] 		//待排序的数组
+QUICKSORT(A, l, r)
+if l < r
+	i = l
+    j = r
+    key = arr[l]
+	// 
+    while true do
+		// 从左向右找比key大的值
+        while arr[i] <= key do
+            i += 1
+            if i = r then
+                break
+		// 从右向左找比key小的值
+        while arr[j] >= key do
+            j -= 1
+            if j = low then
+                break
+		// 如果low指针小于high指针则结束排序
+        if i >= j then
+            break
+		//交换i,j对应的值，继续满足 左小右大
+        arr[i] <==> arr[j]
+	// 中枢值与j对应值交换
+    arr[l] <==> arr[j]
+	// 对当前中枢值左边部分排序
+    QUICKSORT(A, l , j-1)
+	// 对当前中枢值右边部分排序
+    QUICKSORT(A, j+1, r)
+end 
+
+
+// 归并排序
+Array arr[l .. r] 		//待排序的数组
+// 归并排序函数
+MERGE-SORT(A, l, r)
+if l < r
+	mid =(l + r)/2
+	MERGE-SORT(A, l, mid)		// 左半部分排序
+	MERGE-SORT(A, mid + 1, r)		// 右半部分排序
+	MERGE(A, l, mid, r)		// 合并两部分数据
+end
+
