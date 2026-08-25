@@ -65,6 +65,7 @@
 **/.vs/
 **/.idea/
 **/.settings/
+**/.lift/
 **/*.iml
 **/.classpath
 **/.project
