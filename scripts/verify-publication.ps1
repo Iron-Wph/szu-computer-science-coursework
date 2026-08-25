@@ -18,7 +18,7 @@ $blockedExtensions = @(
     '.dll', '.so', '.dylib', '.pyd', '.node', '.obj', '.o', '.lib', '.pdb',
     '.ipch', '.pch', '.class', '.jar'
 )
-$blockedPathPattern = '(?i)(^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.next)(/|$)'
+$blockedPathPattern = '(?i)(^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.vscode|\.next)(/|$)'
 
 $blockedFiles = [System.Collections.Generic.List[string]]::new()
 $largeFiles = [System.Collections.Generic.List[string]]::new()
