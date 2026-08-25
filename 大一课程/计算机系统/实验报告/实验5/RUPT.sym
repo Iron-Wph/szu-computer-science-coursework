@@ -1,0 +1,27 @@
+//Symbol Name		Page Address
+//----------------	------------
+//	DDR                     208F
+//	DSR                     208E
+//	ECHO                    200B
+//	KBDR                    208D
+//	KBSR                    208C
+//	L2                      2096
+//	LOOP                    2094
+//	SAVER0                  20A0
+//	SAVER1                  20A1
+//	SAVER3                  20A2
+//	SAVER7                  20A3
+//	SR0                     2021
+//	SR1                     2022
+//	SR2                     2023
+//	SR3                     2024
+//	SR4                     2025
+//	SR7                     2026
+//	START                   2008
+//	aga                     2016
+//	data                    2028
+//	done                    201A
+//	hang                    2027
+//	next                    2013
+//	return                  209B
+//	show                    2090

@@ -1,0 +1,18 @@
+//Symbol Name		Page Address
+//----------------	------------
+//	COUNT                   303D
+//	DELAY                   3037
+//	IE                      3021
+//	KBSR                    3022
+//	REP                     3039
+//	SaveR1                  303E
+//	ag                      300E
+//	aga                     3017
+//	hang                    3036
+//	ics1                    3024
+//	ics2                    302D
+//	rupt                    3020
+//	sec                     3015
+//	show                    300B
+//	stack                   3023
+//	vec                     301F
