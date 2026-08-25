@@ -31,3 +31,9 @@
 *.tiff binary
 *.xls binary
 *.xlsx binary
+
+# Preserve legacy coursework encodings and generated machine representations.
+*.asm binary
+*.bin binary
+*.hex binary
+*.lst binary

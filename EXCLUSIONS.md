@@ -2,7 +2,8 @@
 
 The source archive was inspected on 2026-08-25 before this public repository was
 created. The source contained 117,219 files totaling approximately 32.69 GiB.
-The publication snapshot retained 5,259 files totaling approximately 3.21 GiB.
+The publication snapshot retained 4,942 coursework files totaling approximately
+2.78 GiB. Repository metadata adds nine small tracked files.
 
 | Category | Files excluded | Approx. size |
 | --- | ---: | ---: |
@@ -11,9 +12,10 @@ The publication snapshot retained 5,259 files totaling approximately 3.21 GiB.
 | Generated datasets and data assets | 13,699 | 2.941 GiB |
 | Model files, databases, and scientific datasets | 78 | 2.520 GiB |
 | Videos | 27 | 2.074 GiB |
-| Third-party course material | 3,431 | 1.926 GiB |
-| Generated temporary files and binaries | 616 | 0.513 GiB |
-| Files at or above 49 MiB | 4 | 0.451 GiB |
+| Third-party course material | 3,561 | 2.133 GiB |
+| Unverified document ownership | 179 | 0.325 GiB |
+| Generated temporary files and binaries | 625 | 0.513 GiB |
+| Files at or above 49 MiB | 3 | 0.352 GiB |
 | Installers and executables | 358 | 0.062 GiB |
 | Private personal material | 65 | 0.036 GiB |
 | Nested Git metadata | 722 | 0.033 GiB |
