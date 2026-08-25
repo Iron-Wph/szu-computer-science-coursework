@@ -67,6 +67,7 @@
 **/.settings/
 **/.lift/
 **/.vscode/
+**/exe/
 **/*.iml
 **/.classpath
 **/.project
