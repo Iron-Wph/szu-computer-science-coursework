@@ -14,17 +14,20 @@ $blockedExtensions = @(
     '.zip', '.rar', '.7z', '.tar', '.gz', '.tgz', '.bz2', '.xz', '.cab',
     '.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv', '.wmv', '.m4v',
     '.mpg', '.mpeg', '.exe', '.msi', '.msix', '.appx', '.apk', '.dmg',
-    '.pkg', '.deb', '.rpm', '.iso', '.whl'
+    '.pkg', '.deb', '.rpm', '.iso', '.whl',
+    '.dll', '.so', '.dylib', '.pyd', '.node', '.obj', '.o', '.lib', '.pdb',
+    '.ipch', '.pch', '.class', '.jar'
 )
-$blockedPathPattern = '(?i)(^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.next)(/|$)'
+$blockedPathPattern = '(?i)(^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.next)(/|$)'
 
 $blockedFiles = [System.Collections.Generic.List[string]]::new()
 $largeFiles = [System.Collections.Generic.List[string]]::new()
 $secretFiles = [System.Collections.Generic.List[string]]::new()
+$binaryMagicFiles = [System.Collections.Generic.List[string]]::new()
 
 foreach ($relativePath in $tracked) {
     $extension = [System.IO.Path]::GetExtension($relativePath).ToLowerInvariant()
-    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern) {
+    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or [System.IO.Path]::GetFileName($relativePath) -in @('.classpath', '.project') -or $extension -eq '.iml') {
         $blockedFiles.Add($relativePath)
     }
 
@@ -35,6 +38,32 @@ foreach ($relativePath in $tracked) {
     $absolutePath = Join-Path $root $relativePath
     if ((Get-Item -LiteralPath $absolutePath).Length -ge 49MB) {
         $largeFiles.Add($relativePath)
+    }
+
+    $stream = $null
+    try {
+        $stream = [System.IO.File]::OpenRead($absolutePath)
+        $bytes = New-Object byte[] 4
+        $read = $stream.Read($bytes, 0, $bytes.Length)
+        $isCompiledBinary = $false
+        if ($read -ge 4 -and $bytes[0] -eq 0x7f -and $bytes[1] -eq 0x45 -and $bytes[2] -eq 0x4c -and $bytes[3] -eq 0x46) {
+            $isCompiledBinary = $true
+        }
+        elseif ($read -ge 2 -and $bytes[0] -eq 0x4d -and $bytes[1] -eq 0x5a) {
+            $isCompiledBinary = $true
+        }
+        elseif ($read -ge 4) {
+            $magic = '{0:X2}{1:X2}{2:X2}{3:X2}' -f $bytes[0], $bytes[1], $bytes[2], $bytes[3]
+            $isCompiledBinary = $magic -in @('FEEDFACE', 'FEEDFACF', 'CEFAEDFE', 'CFFAEDFE')
+        }
+        if ($isCompiledBinary) {
+            $binaryMagicFiles.Add($relativePath)
+        }
+    }
+    finally {
+        if ($null -ne $stream) {
+            $stream.Dispose()
+        }
     }
 }
 
@@ -65,6 +94,11 @@ if ($blockedFiles.Count -gt 0) {
 if ($largeFiles.Count -gt 0) {
     Write-Error "File at or above 49 MiB found ($($largeFiles.Count))."
     $largeFiles | ForEach-Object { Write-Host "  $_" }
+    $failures++
+}
+if ($binaryMagicFiles.Count -gt 0) {
+    Write-Error "Compiled executable detected by file signature ($($binaryMagicFiles.Count))."
+    $binaryMagicFiles | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
 if ($secretFiles.Count -gt 0) {
