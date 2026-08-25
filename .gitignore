@@ -64,6 +64,9 @@
 **/__pycache__/
 **/.vs/
 **/.idea/
+**/.settings/
+**/.classpath
+**/.project
 **/.next/
 **/.cache/
 **/CMakeFiles/
