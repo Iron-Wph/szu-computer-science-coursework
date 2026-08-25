@@ -33,11 +33,12 @@ backup. The following are intentionally not published:
   is not clearly licensed for redistribution;
 - individual files at or above 49 MiB.
 
-The initial publication audit retained 4,942 coursework files (about 2.78 GiB)
-from a local
-archive of 117,219 files. See [EXCLUSIONS.md](./EXCLUSIONS.md) for the audit
-summary and run [`scripts/verify-publication.ps1`](./scripts/verify-publication.ps1)
-before future updates.
+The final publication audit retained 3,518 coursework files (about 2.23 GiB)
+from a local archive of 117,219 files. Nine small repository-management files
+bring the tracked total to 3,527. See [EXCLUSIONS.md](./EXCLUSIONS.md) for the
+audit summary and run
+[`scripts/verify-publication.ps1`](./scripts/verify-publication.ps1) before
+future updates.
 
 ## Credentials and local setup
 

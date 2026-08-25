@@ -21,15 +21,17 @@ $blockedExtensions = @(
 $blockedPathPattern = '(?i)((^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.vscode|exe|cifar-10-batches-py|\.next)(/|$)|(^|/)[^/]*可执行文件[^/]*(/|$))'
 $blockedPrivateDataPattern = '(?i)^大三/大三上/基于Web的编程/Web/(courses|cxzczxc|students|teachers|users)\.json$'
 $blockedGeneratedDataPattern = '(?i)^大三/大三下/大模型技术及应用/.+/(code|demo)/(?:[^/]+/)*(data_base|train_data|files|datas|documents)(/|$)'
+$blockedThirdPartyAudioPattern = '(?i)(^大一课程/英语/BC_LISTENING.*_Audio\.mp3$|^大三/大三上/图形学/实验/期末大作业/.+/music/.+\.mp3$)'
 
 $blockedFiles = [System.Collections.Generic.List[string]]::new()
 $largeFiles = [System.Collections.Generic.List[string]]::new()
 $secretFiles = [System.Collections.Generic.List[string]]::new()
 $binaryMagicFiles = [System.Collections.Generic.List[string]]::new()
+$archiveMagicFiles = [System.Collections.Generic.List[string]]::new()
 
 foreach ($relativePath in $tracked) {
     $extension = [System.IO.Path]::GetExtension($relativePath).ToLowerInvariant()
-    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or $relativePath -match $blockedPrivateDataPattern -or $relativePath -match $blockedGeneratedDataPattern -or [System.IO.Path]::GetFileName($relativePath) -in @(
+    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or $relativePath -match $blockedPrivateDataPattern -or $relativePath -match $blockedGeneratedDataPattern -or $relativePath -match $blockedThirdPartyAudioPattern -or [System.IO.Path]::GetFileName($relativePath) -in @(
         '.classpath', '.project', 'CMakeCache.txt', 'cmake_install.cmake',
         'ALL_BUILD.vcxproj', 'ALL_BUILD.vcxproj.filters',
         'ZERO_CHECK.vcxproj', 'ZERO_CHECK.vcxproj.filters'
@@ -49,7 +51,7 @@ foreach ($relativePath in $tracked) {
     $stream = $null
     try {
         $stream = [System.IO.File]::OpenRead($absolutePath)
-        $bytes = New-Object byte[] 4
+        $bytes = New-Object byte[] 8
         $read = $stream.Read($bytes, 0, $bytes.Length)
         $isCompiledBinary = $false
         if ($read -ge 4 -and $bytes[0] -eq 0x7f -and $bytes[1] -eq 0x45 -and $bytes[2] -eq 0x4c -and $bytes[3] -eq 0x46) {
@@ -64,6 +66,30 @@ foreach ($relativePath in $tracked) {
         }
         if ($isCompiledBinary) {
             $binaryMagicFiles.Add($relativePath)
+        }
+
+        $isArchive = $false
+        $allowedZipContainerExtensions = @('.docx', '.xlsx', '.pptx', '.odt', '.ods', '.odp', '.xmind')
+        if ($read -ge 4 -and $bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4b -and $bytes[2] -in @(0x03, 0x05, 0x07) -and $bytes[3] -in @(0x04, 0x06, 0x08)) {
+            $isArchive = $extension -notin $allowedZipContainerExtensions
+        }
+        elseif ($read -ge 6 -and $bytes[0] -eq 0x37 -and $bytes[1] -eq 0x7a -and $bytes[2] -eq 0xbc -and $bytes[3] -eq 0xaf -and $bytes[4] -eq 0x27 -and $bytes[5] -eq 0x1c) {
+            $isArchive = $true
+        }
+        elseif ($read -ge 4 -and $bytes[0] -eq 0x52 -and $bytes[1] -eq 0x61 -and $bytes[2] -eq 0x72 -and $bytes[3] -eq 0x21) {
+            $isArchive = $true
+        }
+        elseif ($read -ge 2 -and $bytes[0] -eq 0x1f -and $bytes[1] -eq 0x8b) {
+            $isArchive = $true
+        }
+        elseif ($read -ge 3 -and $bytes[0] -eq 0x42 -and $bytes[1] -eq 0x5a -and $bytes[2] -eq 0x68) {
+            $isArchive = $true
+        }
+        elseif ($read -ge 6 -and $bytes[0] -eq 0xfd -and $bytes[1] -eq 0x37 -and $bytes[2] -eq 0x7a -and $bytes[3] -eq 0x58 -and $bytes[4] -eq 0x5a -and $bytes[5] -eq 0x00) {
+            $isArchive = $true
+        }
+        if ($isArchive) {
+            $archiveMagicFiles.Add($relativePath)
         }
     }
     finally {
@@ -105,6 +131,11 @@ if ($largeFiles.Count -gt 0) {
 if ($binaryMagicFiles.Count -gt 0) {
     Write-Error "Compiled executable detected by file signature ($($binaryMagicFiles.Count))."
     $binaryMagicFiles | ForEach-Object { Write-Host "  $_" }
+    $failures++
+}
+if ($archiveMagicFiles.Count -gt 0) {
+    Write-Error "Archive detected by file signature ($($archiveMagicFiles.Count))."
+    $archiveMagicFiles | ForEach-Object { Write-Host "  $_" }
     $failures++
 }
 if ($secretFiles.Count -gt 0) {
