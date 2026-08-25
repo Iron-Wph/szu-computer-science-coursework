@@ -76,6 +76,7 @@
 **/.vscode/
 **/exe/
 **/*可执行文件*/
+**/cifar-10-batches-py/
 **/*.iml
 **/.classpath
 **/.project

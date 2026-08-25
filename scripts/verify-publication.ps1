@@ -18,7 +18,7 @@ $blockedExtensions = @(
     '.dll', '.so', '.dylib', '.pyd', '.node', '.obj', '.o', '.lib', '.pdb',
     '.ipch', '.pch', '.class', '.jar'
 )
-$blockedPathPattern = '(?i)((^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.vscode|exe|\.next)(/|$)|(^|/)[^/]*可执行文件[^/]*(/|$))'
+$blockedPathPattern = '(?i)((^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.vscode|exe|cifar-10-batches-py|\.next)(/|$)|(^|/)[^/]*可执行文件[^/]*(/|$))'
 $blockedPrivateDataPattern = '(?i)^大三/大三上/基于Web的编程/Web/(courses|cxzczxc|students|teachers|users)\.json$'
 $blockedGeneratedDataPattern = '(?i)^大三/大三下/大模型技术及应用/.+/(code|demo)/(?:[^/]+/)*(data_base|train_data|files|datas|documents)(/|$)'
 
