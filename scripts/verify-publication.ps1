@@ -9,7 +9,9 @@ if ([string]::IsNullOrWhiteSpace($root)) {
     throw 'Run this script inside the Git repository.'
 }
 
-$tracked = @(git -C $root ls-files)
+# Keep non-ASCII paths literal even when the caller uses Git's default
+# core.quotePath setting (as a fresh clone does).
+$tracked = @(git -c core.quotePath=false -C $root ls-files)
 $blockedExtensions = @(
     '.zip', '.rar', '.7z', '.tar', '.gz', '.tgz', '.bz2', '.xz', '.cab',
     '.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv', '.wmv', '.m4v',
