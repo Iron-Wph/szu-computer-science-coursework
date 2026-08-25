@@ -20,6 +20,7 @@ $blockedExtensions = @(
 )
 $blockedPathPattern = '(?i)((^|/)(node_modules|venv|\.venv|site-packages|__pycache__|\.vs|\.idea|\.settings|\.lift|\.vscode|exe|\.next)(/|$)|(^|/)[^/]*可执行文件[^/]*(/|$))'
 $blockedPrivateDataPattern = '(?i)^大三/大三上/基于Web的编程/Web/(courses|cxzczxc|students|teachers|users)\.json$'
+$blockedGeneratedDataPattern = '(?i)^大三/大三下/大模型技术及应用/.+/(code|demo)/(?:[^/]+/)*(data_base|train_data|files|datas|documents)(/|$)'
 
 $blockedFiles = [System.Collections.Generic.List[string]]::new()
 $largeFiles = [System.Collections.Generic.List[string]]::new()
@@ -28,7 +29,7 @@ $binaryMagicFiles = [System.Collections.Generic.List[string]]::new()
 
 foreach ($relativePath in $tracked) {
     $extension = [System.IO.Path]::GetExtension($relativePath).ToLowerInvariant()
-    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or $relativePath -match $blockedPrivateDataPattern -or [System.IO.Path]::GetFileName($relativePath) -in @(
+    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or $relativePath -match $blockedPrivateDataPattern -or $relativePath -match $blockedGeneratedDataPattern -or [System.IO.Path]::GetFileName($relativePath) -in @(
         '.classpath', '.project', 'CMakeCache.txt', 'cmake_install.cmake',
         'ALL_BUILD.vcxproj', 'ALL_BUILD.vcxproj.filters',
         'ZERO_CHECK.vcxproj', 'ZERO_CHECK.vcxproj.filters'

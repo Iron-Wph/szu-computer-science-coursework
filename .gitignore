@@ -105,6 +105,18 @@
 *.sqlite3
 *.mdb
 
+# Generated RAG corpora, indexes, and training data
+/大三/大三下/大模型技术及应用/期末大作业/code/**/data_base/
+/大三/大三下/大模型技术及应用/期末大作业/code/**/train_data/
+/大三/大三下/大模型技术及应用/期末大作业/code/**/files/
+/大三/大三下/大模型技术及应用/期末大作业/code/**/datas/
+/大三/大三下/大模型技术及应用/期末大作业/code/**/documents/
+/大三/大三下/大模型技术及应用/期末大作业/demo/**/data_base/
+/大三/大三下/大模型技术及应用/期末大作业/demo/**/train_data/
+/大三/大三下/大模型技术及应用/期末大作业/demo/**/files/
+/大三/大三下/大模型技术及应用/期末大作业/demo/**/datas/
+/大三/大三下/大模型技术及应用/期末大作业/demo/**/documents/
+
 # Generated and operating-system files
 *.pyc
 *.tmp
