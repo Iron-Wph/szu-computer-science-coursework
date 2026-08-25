@@ -1,0 +1,25 @@
+{测试代码示例}
+int x, y;
+bool flag;
+string message;
+
+message := 'Hello, world!';
+x := 10;
+y := 5;
+flag := x > y;
+
+do
+    write x;
+    x := x - 1
+while x > 0;
+
+read y;
+if y = 0 then
+    message := 'Division by zero!'
+else
+    x := x / y
+end;
+
+repeat
+    write message
+until flag = (1 = 0)

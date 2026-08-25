@@ -1,0 +1,25 @@
+{简单测试样例}
+int num1, num2;
+bool flag;
+string str;
+
+num1 := 10;
+num2 := 20;
+flag := num1 < num2;
+str := '测试字符串';
+
+if flag then
+    write num1
+end;
+
+repeat
+    num1 := num1 + 1
+until num1 >= 15;
+
+do
+    str := str + '追加内容';
+    write str
+while num1 < 20;
+
+read num2;
+write num2

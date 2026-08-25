@@ -1,0 +1,13 @@
+{Arithmetic Test with Loop and If}
+read n;
+sum := 0;
+i := 10;
+repeat
+    if i < 5 then
+        sum := sum + i * 2
+    else
+        sum := sum - i / 2
+    end;
+    i := i - 1
+until i < n;
+write sum

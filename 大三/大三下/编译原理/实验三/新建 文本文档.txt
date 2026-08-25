@@ -1,0 +1,1165 @@
+/****************************************************/
+/* 文件: globals.h                                  */
+/* TINY 编译器的全局类型和变量                      */
+/* 必须在其他头文件包含之前引入                      */
+/* 《编译器构造：原理与实践》                        */
+/* 作者: Kenneth C. Louden                            */
+/****************************************************/
+
+#ifndef _GLOBALS_H_
+#define _GLOBALS_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+/* MAXRESERVED = 保留字的数量 */
+#define MAXRESERVED 18
+
+typedef enum 
+    /* 记录用的标记 */
+   {ENDFILE,ERROR,
+    /* 保留字 */
+    IF,THEN,ELSE,END,REPEAT,UNTIL,READ,WRITE,
+	T_TRUE,T_FALSE,OR,AND,NOT,INT,BOOL,STRING,DO,WHILE,
+    /* 多字符标记 */
+    ID,NUM,STR,
+    /* 特殊符号 */
+    ASSIGN,EQ,LT,GT,LTE,GTE,PLUS,MINUS,TIMES,OVER,LPAREN,RPAREN,SEMI,COMMA,SQM
+   } TokenType;
+
+extern FILE* source; /* 源代码文本文件 */
+extern FILE* listing; /* 列表输出文本文件 */
+extern FILE* code; /* TM 模拟器的代码文本文件 */
+
+extern int lineno; /* 用于列表输出的源代码行号 */
+
+/**************************************************/
+/***********   用于解析的语法树 ************/
+/**************************************************/
+
+// 新增类型节点
+typedef enum {StmtK,ExpK, TypeK} NodeKind;
+// 新增语句节点
+typedef enum {IfK,RepeatK,AssignK,ReadK,WriteK,WhileK,ProgramK} StmtKind;
+typedef enum {OpK,ConstK,IdK,StrK} ExpKind;
+// 新增创建类型的语法节点
+typedef enum {IntK, BoolK, StringK} TypeKind;
+
+/* ExpType 用于类型检查 */
+typedef enum {Void,Integer,Boolean} ExpType;
+
+#define MAXCHILDREN 3
+
+typedef struct treeNode
+   { struct treeNode * child[MAXCHILDREN];
+     struct treeNode * sibling;
+     int lineno;
+     NodeKind nodekind;
+     // 新增类型
+     union { StmtKind stmt; ExpKind exp; TypeKind type;} kind;
+     union { TokenType op;
+             int val;
+             char * name; } attr;
+     ExpType type; /* 用于表达式的类型检查 */
+   } TreeNode;
+
+/**************************************************/
+/***********   跟踪标志 ************/
+/**************************************************/
+
+/* EchoSource 为 TRUE 时，在解析过程中会将源代码及行号回显到列表文件中 */
+/***  错误 **/
+#define MAX_ERROR 6
+extern int errorCode;
+extern char *errorMsg[MAX_ERROR];
+
+extern int EchoSource;
+
+/* TraceScan 为 TRUE 时，扫描器识别每个标记时会将标记信息打印到列表文件中 */
+extern int TraceScan;
+
+/* TraceParse 为 TRUE 时，会将语法树以线性化形式（使用缩进表示子节点）打印到列表文件中 */
+extern int TraceParse;
+
+/* TraceAnalyze 为 TRUE 时，符号表的插入和查找操作会报告到列表文件中 */
+extern int TraceAnalyze;
+
+/* TraceCode 为 TRUE 时，代码生成时会在 TM 代码文件中写入注释 */
+extern int TraceCode;
+
+/* Error 为 TRUE 时，若发生错误则阻止后续处理 */
+extern int Error; 
+#endif
+
+
+
+/****************************************************/
+/* File: util.c                                     */
+/* Utility function implementation                  */
+/* for the TINY compiler                            */
+/* Compiler Construction: Principles and Practice   */
+/* Kenneth C. Louden                                */
+/****************************************************/
+
+#include "globals.h"
+#include "util.h"
+
+
+
+/* Procedure printToken prints a token 
+ * and its lexeme to the listing file
+ */
+void printToken( TokenType token, const char* tokenString )
+{ switch (token)
+  { case IF:
+    case THEN:
+    case ELSE:
+    case END:
+    case REPEAT:
+    case UNTIL:
+    case READ:
+    case WRITE:
+    case T_TRUE:
+    case T_FALSE:
+    case OR:
+    case AND:
+    case NOT:
+    case INT:
+    case BOOL:
+    case STRING:
+    case DO:
+    case WHILE: 
+        fprintf(listing,
+          "reserved word: %s\n",tokenString);
+      break;
+    case ASSIGN: fprintf(listing,":=\n"); break;
+
+    case LT: fprintf(listing,"<\n"); break;
+    case EQ: fprintf(listing,"=\n"); break;
+    case GT: fprintf(listing,">\n"); break;
+    case LTE: fprintf(listing,"<=\n"); break;
+    case GTE: fprintf(listing,">=\n"); break;
+
+    case LPAREN: fprintf(listing,"(\n"); break;
+    case RPAREN: fprintf(listing,")\n"); break;
+    case SEMI: fprintf(listing,";\n"); break;
+	  case COMMA: fprintf(listing,",\n"); break;
+    case SQM: fprintf(listing,"\'\n"); break;
+    case PLUS: fprintf(listing,"+\n"); break;
+    case MINUS: fprintf(listing,"-\n"); break;
+    case TIMES: fprintf(listing,"*\n"); break;
+    case OVER: fprintf(listing,"/\n"); break;
+    case ENDFILE: fprintf(listing,"EOF\n"); break;
+    case NUM:
+      fprintf(listing,
+          "NUM, val= %s\n",tokenString);
+      break;
+    case ID:
+      fprintf(listing,
+          "ID, name= %s\n",tokenString);
+      break;
+    case STR:
+      fprintf(listing,"STR,name= %s\n",tokenString);
+      break;
+    case ERROR: {    
+        fprintf(listing,
+          "ERROR %s :%s\n",errorMsg[errorCode],tokenString);
+      }break;
+    default: /* should never happen */
+      fprintf(listing,"Unknown token: %d\n",token);
+  }
+}
+
+/* Function newStmtNode creates a new statement
+ * node for syntax tree construction
+ */
+TreeNode * newStmtNode(StmtKind kind)
+{ TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+  int i;
+  if (t==NULL)
+    fprintf(listing,"Out of memory error at line %d\n",lineno);
+  else {
+    for (i=0;i<MAXCHILDREN;i++) t->child[i] = NULL;
+    t->sibling = NULL;
+    t->nodekind = StmtK;
+    t->kind.stmt = kind;
+    t->lineno = lineno;
+  }
+  return t;
+}
+
+// 新增创建类型的语法节点
+TreeNode * newTypeNode(TypeKind kind)
+{ TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+  int i;
+  if (t==NULL)
+    fprintf(listing,"Out of memory error at line %d\n",lineno);
+  else {
+    for (i=0;i<MAXCHILDREN;i++) t->child[i] = NULL;
+    t->sibling = NULL;
+    t->nodekind = TypeK;
+    t->kind.type = kind;
+    t->lineno = lineno;
+  }
+  return t;
+}
+
+/* Function newExpNode creates a new expression 
+ * node for syntax tree construction
+ */
+TreeNode * newExpNode(ExpKind kind)
+{ TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+  int i;
+  if (t==NULL)
+    fprintf(listing,"Out of memory error at line %d\n",lineno);
+  else {
+    for (i=0;i<MAXCHILDREN;i++) t->child[i] = NULL;
+    t->sibling = NULL;
+    t->nodekind = ExpK;
+    t->kind.exp = kind;
+    t->lineno = lineno;
+    t->type = Void;
+  }
+  return t;
+}
+
+/* Function copyString allocates and makes a new
+ * copy of an existing string
+ */
+char * copyString(char * s)
+{ int n;
+  char * t;
+  if (s==NULL) return NULL;
+  n = strlen(s)+1;
+  t = malloc(n);
+  if (t==NULL)
+    fprintf(listing,"Out of memory error at line %d\n",lineno);
+  else strcpy(t,s);
+  return t;
+}
+
+/* Variable indentno is used by printTree to
+ * store current number of spaces to indent
+ */
+static int indentno = 0;
+
+/* macros to increase/decrease indentation */
+#define INDENT indentno+=2
+#define UNINDENT indentno-=2
+
+/* printSpaces indents by printing spaces */
+static void printSpaces(void)
+{ int i;
+  for (i=0;i<indentno;i++)
+    fprintf(listing," ");
+}
+
+/* procedure printTree prints a syntax tree to the 
+ * listing file using indentation to indicate subtrees
+ */
+void printTree( TreeNode * tree )
+{ int i;
+  INDENT;
+  while (tree != NULL) {
+    printSpaces();
+    if (tree->nodekind==StmtK)
+    { switch (tree->kind.stmt) {
+        case IfK:
+          fprintf(listing,"If\n");
+          break;
+        case RepeatK:
+          fprintf(listing,"Repeat\n");
+          break;
+        case AssignK:
+          fprintf(listing,"Assign to: %s\n",tree->attr.name);
+          break;
+        case ReadK:
+          fprintf(listing,"Read: %s\n",tree->attr.name);
+          break;
+        case WriteK:
+          fprintf(listing,"Write\n");
+          break;
+        // 新增的类型输出
+        case WhileK:
+          fprintf(listing,"While\n");
+          break;
+        case ProgramK:
+          fprintf(listing,"Program\n");
+          break;          
+        default:
+          fprintf(listing,"Unknown ExpNode kind\n");
+          break;
+      }
+    }
+    else if (tree->nodekind==ExpK)
+    { switch (tree->kind.exp) {
+        case OpK:
+          fprintf(listing,"Op: ");
+          printToken(tree->attr.op,"\0");
+          break;
+        case ConstK:
+          fprintf(listing,"Const: Integer: %d\n",tree->attr.val);
+          break;
+        case IdK:
+          fprintf(listing,"Id: %s\n",tree->attr.name);
+          break;
+        case StrK:
+          fprintf(listing,"Const: string: %s\n",tree->attr.name);
+          break;
+        default:
+          fprintf(listing,"Unknown ExpNode kind\n");
+          break;
+      }
+    }
+    // 新增的类型输出
+    else if (tree->nodekind==TypeK)
+    { switch (tree->kind.type) {
+        case IntK:
+          fprintf(listing,"Type: %s\n", "int");
+          break;
+        case BoolK:
+          fprintf(listing,"Type: %s\n", "bool");
+          break;
+        case StringK:
+          fprintf(listing,"Type: %s\n", "string");
+          break;
+        default:
+          fprintf(listing,"Unknown TypeNode kind\n");
+          break;
+      }
+    }
+    else fprintf(listing,"Unknown node kind\n");
+    for (i=0;i<MAXCHILDREN;i++)
+         printTree(tree->child[i]);
+    tree = tree->sibling;
+  }
+  UNINDENT;
+}
+
+
+int isLegalChar(char c) {
+	return (isalnum(c)||
+			isspace(c)||
+			c == '>'||
+			c == '<' ||
+			c == '=' ||
+			c == ',' ||
+			c ==';' ||
+			c =='\'' ||
+			c =='{'	||
+			c =='}' ||
+			c =='+' ||
+			c =='-' ||
+			c =='*' ||
+			c =='/' ||
+			c =='(' ||
+			c ==')' 
+			);
+	}
+
+
+
+/****************************************************/
+/* 文件: scan.c                                     */
+/* TINY 编译器的扫描器实现                           */
+/* 《编译器构造：原理与实践》                        */
+/* 作者: Kenneth C. Louden                            */
+/****************************************************/
+
+#include "globals.h"
+#include "util.h"
+#include "scan.h"
+
+/* 扫描器有限自动机（DFA）中的状态 */
+typedef enum
+   { START,INASSIGN,INCOMMENT,INNUM,INID,INGREAT,INLESS,INSTR,DONE }
+   StateType;
+
+/* 标识符或保留字的词素 */
+char tokenString[MAXTOKENLEN + 1];
+
+/* BUFLEN = 用于存储源代码行的输入缓冲区长度 */
+#define BUFLEN 256
+
+static char lineBuf[BUFLEN]; /* 保存当前行 */
+static int linepos = 0; /* lineBuf 中的当前位置 */
+static int bufsize = 0; /* 缓冲区字符串的当前大小 */
+static int EOF_flag = FALSE; /* 修正 EOF 时 ungetNextChar 函数的行为 */
+
+/* getNextChar 从 lineBuf 中获取下一个非空白字符，
+   如果 lineBuf 已耗尽，则读取新的一行 */
+static int getNextChar(void)
+{ 
+    if (!(linepos < bufsize))
+    { 
+        lineno++;
+        if (fgets(lineBuf, BUFLEN - 1, source))
+        { 
+            if (EchoSource) fprintf(listing, "%4d: %s", lineno, lineBuf);
+            bufsize = strlen(lineBuf);
+            linepos = 0;
+            return lineBuf[linepos++];
+        }
+        else
+        { 
+            EOF_flag = TRUE;
+            return EOF;
+        }
+    }
+    else return lineBuf[linepos++];
+}
+
+/* ungetNextChar 在 lineBuf 中回退一个字符 */
+static void ungetNextChar(void)
+{ 
+    if (!EOF_flag) linepos-- ;
+}
+
+/* 保留字查找表 */
+static struct
+    { 
+        char* str;
+        TokenType tok;
+    } reservedWords[MAXRESERVED]
+   = {{"if",IF},{"then",THEN},{"else",ELSE},{"end",END},
+      {"repeat",REPEAT},{"until",UNTIL},{"read",READ},
+      {"write",WRITE},
+      {"true",T_TRUE},
+      {"false",T_FALSE},
+      {"not",NOT},
+      {"and",AND},
+      {"or",OR},
+      {"int",INT},
+      {"string",STRING},
+      {"bool",BOOL},
+      {"do",DO},
+      {"while",WHILE}
+     };
+
+/* 查找一个标识符，看它是否是一个保留字 */
+/* 使用线性搜索 */
+static TokenType reservedLookup (char * s)
+{ 
+    int i;
+    for (i = 0; i < MAXRESERVED; i++)
+        if (!strcmp(s, reservedWords[i].str))
+            return reservedWords[i].tok;
+    return ID;
+}
+
+
+/* 错误代码部分 **/
+
+int errorCode = 0;		
+char *errorMsg[6] = {
+    "未知错误",
+    "注释不完整，缺少 }!",
+    "注释错误，意外的 {!",
+    "字符串不完整，缺少 '!",
+    "字符串不能包含换行符",
+    "非法字符"
+};
+#define ERR_UNKOWN 0
+#define ERR_COMMENT_US 1
+#define ERR_COMMENT_CE 2
+#define ERR_STRING_US 3
+#define ERR_STRING_RETURN 4
+#define ERR_CHAR_IL 5
+
+/*                 */
+
+
+/****************************************/
+/* 扫描器的主要函数                      */
+/****************************************/
+/* 函数 getToken 返回源文件中的下一个标记 */
+TokenType getToken(void)
+{  
+    /* 用于存储到 tokenString 的索引 */
+    int tokenStringIndex = 0;
+    /* 保存当前要返回的标记 */
+    TokenType currentToken;
+    /* 当前状态 - 总是从 START 开始 */
+    StateType state = START;
+    /* 用于指示是否保存到 tokenString 的标志 */
+    int save;
+    while (state != DONE)
+    { 
+        int c = getNextChar();
+        save = TRUE;
+        switch (state)
+        { 
+            case START:
+                if (isdigit(c))
+                    state = INNUM;
+                else if (isalpha(c))
+                    state = INID;
+                else if (c == '<') 
+                    state = INLESS;
+                else if (c == '>') 
+                    state = INGREAT;
+                else if (c == '\'') {
+                    state = INSTR;
+                }
+                else if (c == ':')
+                    state = INASSIGN;
+                else if ((c == ' ') || (c == '\t') || (c == '\n')|| (c == '\r'))
+                    save = FALSE;
+                else if (c == '{')
+                { 
+                    save = FALSE;
+                    state = INCOMMENT;
+                }
+                else 
+                { 
+                    state = DONE;
+                    switch (c)
+                    { 
+                        case EOF:
+                            save = FALSE;
+                            currentToken = ENDFILE;
+                            break;
+                        case '=':
+                            currentToken = EQ;
+                            break;
+                        case '+':
+                            currentToken = PLUS;
+                            break;
+                        case '-':
+                            currentToken = MINUS;
+                            break;
+                        case '*':
+                            currentToken = TIMES;
+                            break;
+                        case '/':
+                            currentToken = OVER;
+                            break;
+                        case '(':
+                            currentToken = LPAREN;
+                            break;
+                        case ')':
+                            currentToken = RPAREN;
+                            break;
+                        case ';':
+                            currentToken = SEMI;
+                            break;
+                        case ',':
+                            currentToken = COMMA;
+                            break;
+                        default:
+                            if (!isLegalChar(c)) {
+                                currentToken = ERROR;
+                                errorCode = ERR_CHAR_IL;
+                                break;
+                            }
+                            currentToken = ERROR;
+                            errorCode = ERR_UNKOWN;
+                            break;
+                    }
+                }
+                break;
+            case INCOMMENT:
+                save = FALSE;
+                if (c == EOF)
+                { 
+                    state = DONE;
+                    currentToken = ERROR;
+                    errorCode = ERR_COMMENT_US;
+                }
+                else if (c == '}') state = START;
+                else if (c == '{') {
+                    state = DONE;
+                    currentToken = ERROR;
+                    errorCode = ERR_COMMENT_CE;
+                }
+                break;
+            case INASSIGN:
+                state = DONE;
+                if (c == '=')
+                    currentToken = ASSIGN;
+                else
+                { 
+                    /* 回退输入 */
+                    ungetNextChar();
+                    save = FALSE;
+                    currentToken = ERROR;
+                }
+                break;
+            case INNUM:
+                if (!isdigit(c))
+                { 
+                    /* 回退输入 */
+                    ungetNextChar();
+                    save = FALSE;
+                    state = DONE;
+                    currentToken = NUM;
+                }
+                break;
+            case INID:
+                if (!isalpha(c)&&!isdigit(c))
+                { 
+                    /* 回退输入 */
+                    ungetNextChar();
+                    save = FALSE;
+                    state = DONE;
+                    currentToken = ID;
+                }
+                break;
+            case INLESS:
+                state = DONE;
+                if (c == '=')
+                    currentToken = LTE;
+                else
+                { 
+                    ungetNextChar();
+                    currentToken = LT;
+                    save = FALSE;
+                }
+                break;
+            case INGREAT:
+                state = DONE;
+                if (c == '=')
+                    currentToken = GTE;
+                else
+                { 
+                    ungetNextChar();
+                    currentToken = GT;
+                    save = FALSE;
+                }
+                break;
+            case INSTR:
+                if (c == '\'') {
+                    currentToken = STR;
+                    state = DONE;
+                }
+                else if (c == '\n' )  // 换行符
+                { 
+                    ungetNextChar();
+                    currentToken = ERROR ;
+                    errorCode = ERR_STRING_RETURN;
+                    save = FALSE;
+                    state = DONE;
+                }
+                else if (c == EOF) {
+                    currentToken = ERROR;
+                    errorCode = ERR_STRING_US;
+                    save = FALSE;
+                    state = DONE;
+                }
+                break;
+            case DONE:
+            default: /* 不应该发生 */
+                fprintf(listing, "扫描器错误: 状态 = %d\n", state);
+                state = DONE;
+                currentToken = ERROR;
+                break;
+        }
+        if ((save) && (tokenStringIndex <= MAXTOKENLEN))
+            tokenString[tokenStringIndex++] = (char) c;
+        if (state == DONE)
+        { 
+            tokenString[tokenStringIndex] = '\0';
+            if (currentToken == ID)
+                currentToken = reservedLookup(tokenString);
+        }
+    }
+    if (TraceScan) {
+        fprintf(listing, "\t%d: ", lineno);
+        printToken(currentToken, tokenString);
+    }
+    return currentToken;
+} /* end getToken */
+
+
+
+/****************************************************/
+/* 文件: parse.c                                    */
+/* TINY 编译器的解析器实现                           */
+/* 《编译器构造：原理与实践》                        */
+/* 作者: Kenneth C. Louden                            */
+/****************************************************/
+
+#include "globals.h"
+#include "util.h"
+#include "scan.h"
+#include "parse.h"
+
+// 保存当前的标记
+static TokenType token; 
+
+// 递归调用的函数原型
+static TreeNode * stmt_sequence(void);
+static TreeNode * statement(void);
+static TreeNode * if_stmt(void);
+static TreeNode * repeat_stmt(void);
+static TreeNode * assign_stmt(void);
+static TreeNode * read_stmt(void);
+static TreeNode * write_stmt(void);
+static TreeNode * _exp(void);
+static TreeNode * simple_exp(void);
+static TreeNode * term(void);
+static TreeNode * factor(void);
+// 新增产生式
+static TreeNode * declarations(void);
+static TreeNode * decl(void);
+static TreeNode * type_specifier(void);
+static TreeNode * varlist(void);
+static TreeNode * while_stmt(void);
+
+
+// 输出语法错误信息
+static void syntaxError(char * message)
+{ 
+    // 输出错误提示信息
+    fprintf(listing,"\n>>> ");
+    // 输出错误发生的行号和具体错误信息
+    fprintf(listing,"第 %d 行发生语法错误: %s",lineno,message);
+    // 标记发生错误
+    Error = TRUE;
+}
+
+// 匹配期望的标记
+static void match(TokenType expected)
+{ 
+    // 如果当前标记与期望标记相同，获取下一个标记
+    if (token == expected) token = getToken();
+    else {
+        // 输出语法错误信息
+        syntaxError("意外的标记 -> ");
+        // 打印当前标记
+        printToken(token,tokenString);
+        fprintf(listing,"      ");
+    }
+}
+
+// 解析语句序列
+TreeNode * stmt_sequence(void)
+{ 
+    // 解析一条语句
+    TreeNode * t = statement();
+    TreeNode * p = t;
+    // 当未到文件结尾，未遇到 END、ELSE、UNTIL 标记时继续解析
+    // 新增while语句
+    while ((token!=ENDFILE) && (token!=END) &&
+           (token!=ELSE) && (token!=UNTIL) && (token!=WHILE))
+    { 
+        TreeNode * q;
+        // 匹配分号
+        match(SEMI);
+        // 解析下一条语句
+        q = statement();
+        if (q!=NULL) {
+            if (t==NULL) t = p = q;
+            else {
+                // 将新语句作为兄弟节点连接
+                p->sibling = q;
+                p = q;
+            }
+        }
+    }
+    return t;
+}
+
+// 解析单条语句
+TreeNode * statement(void)
+{ 
+    TreeNode * t = NULL;
+    switch (token) {
+        // 解析 if 语句
+        case IF : t = if_stmt(); break;
+        // 解析 repeat 语句
+        case REPEAT : t = repeat_stmt(); break;
+        // 解析赋值语句
+        case ID : t = assign_stmt(); break;
+        // 解析 read 语句
+        case READ : t = read_stmt(); break;
+        // 解析 write 语句
+        case WRITE : t = write_stmt(); break;
+        // 新增解析while语句，以"DO"开头
+        case DO : t = while_stmt(); break;
+        default : 
+            // 输出语法错误信息
+            syntaxError("意外的标记 -> ");
+            // 打印当前标记
+            printToken(token,tokenString);
+            // 获取下一个标记
+            token = getToken();
+            break;
+    } 
+    return t;
+}
+
+// 解析 if 语句
+TreeNode * if_stmt(void)
+{ 
+    // 创建一个 if 语句节点
+    TreeNode * t = newStmtNode(IfK);
+    // 匹配 IF 标记
+    match(IF);
+    if (t!=NULL) t->child[0] = _exp();
+    // 匹配 THEN 标记
+    match(THEN);
+    if (t!=NULL) t->child[1] = stmt_sequence();
+    if (token==ELSE) {
+        // 匹配 ELSE 标记
+        match(ELSE);
+        if (t!=NULL) t->child[2] = stmt_sequence();
+    }
+    // 匹配 END 标记
+    match(END);
+    return t;
+}
+
+// 解析 repeat 语句
+TreeNode * repeat_stmt(void)
+{ 
+    // 创建一个 repeat 语句节点
+    TreeNode * t = newStmtNode(RepeatK);
+    // 匹配 REPEAT 标记
+    match(REPEAT);
+    if (t!=NULL) t->child[0] = stmt_sequence();
+    // 匹配 UNTIL 标记
+    match(UNTIL);
+    if (t!=NULL) t->child[1] = _exp();
+    return t;
+}
+
+// 解析赋值语句
+TreeNode * assign_stmt(void)
+{ 
+    // 创建一个赋值语句节点
+    TreeNode * t = newStmtNode(AssignK);
+    if ((t!=NULL) && (token==ID))
+        t->attr.name = copyString(tokenString);
+    // 匹配 ID 标记
+    match(ID);
+    // 匹配赋值符号
+    match(ASSIGN);
+    if (t!=NULL) t->child[0] = _exp();
+    return t;
+}
+
+// 解析 read 语句
+TreeNode * read_stmt(void)
+{ 
+    // 创建一个 read 语句节点
+    TreeNode * t = newStmtNode(ReadK);
+    // 匹配 READ 标记
+    match(READ);
+    if ((t!=NULL) && (token==ID))
+        t->attr.name = copyString(tokenString);
+    // 匹配 ID 标记
+    match(ID);
+    return t;
+}
+
+// 解析 write 语句
+TreeNode * write_stmt(void)
+{ 
+    // 创建一个 write 语句节点
+    TreeNode * t = newStmtNode(WriteK);
+    // 匹配 WRITE 标记
+    match(WRITE);
+    if (t!=NULL) t->child[0] = _exp();
+    return t;
+}
+
+// 解析表达式
+TreeNode * _exp(void)
+{ 
+    // 解析简单表达式
+    TreeNode * t = simple_exp();
+    // 新增bool: 补充大于、大于等于和小于等于的节点创建
+    if ((token==LT)||(token==EQ) || (token==LTE) || (token==GTE) || (token==GT)) {
+        // 创建一个操作符节点
+        TreeNode * p = newExpNode(OpK);
+        if (p!=NULL) {
+            p->child[0] = t;
+            p->attr.op = token;
+            t = p;
+        }
+        // 匹配操作符
+        match(token);
+        if (t!=NULL)
+            t->child[1] = simple_exp();
+    }
+    return t;
+}
+
+// 解析简单表达式
+TreeNode * simple_exp(void)
+{ 
+    // 解析项
+    TreeNode * t = term();
+    while ((token==PLUS)||(token==MINUS))
+    { 
+        // 创建一个操作符节点
+        TreeNode * p = newExpNode(OpK);
+        if (p!=NULL) {
+            p->child[0] = t;
+            p->attr.op = token;
+            t = p;
+            // 匹配操作符
+            match(token);
+            t->child[1] = term();
+        }
+    }
+    return t;
+}
+
+// 解析项
+TreeNode * term(void)
+{ 
+    // 解析因子
+    TreeNode * t = factor();
+    while ((token==TIMES)||(token==OVER))
+    { 
+        // 创建一个操作符节点
+        TreeNode * p = newExpNode(OpK);
+        if (p!=NULL) {
+            p->child[0] = t;
+            p->attr.op = token;
+            t = p;
+            // 匹配操作符
+            match(token);
+            p->child[1] = factor();
+        }
+    }
+    return t;
+}
+
+// 解析因子
+TreeNode * factor(void)
+{ 
+    TreeNode * t = NULL;
+    switch (token) {
+        case NUM :
+            // 创建一个常量节点
+            t = newExpNode(ConstK);
+            if ((t!=NULL) && (token==NUM))
+                t->attr.val = atoi(tokenString);
+            // 匹配数字标记
+            match(NUM);
+            break;
+        case ID :
+            // 创建一个标识符节点
+            t = newExpNode(IdK);
+            if ((t!=NULL) && (token==ID))
+                t->attr.name = copyString(tokenString);
+            // 匹配标识符标记
+            match(ID);
+            break;
+        case LPAREN :
+            // 匹配左括号
+            match(LPAREN);
+            t = _exp();
+            // 匹配右括号
+            match(RPAREN);
+            break;
+        // 新增字符串
+        case STR :
+            // 创建一个字符串节点
+            t = newExpNode(StrK);
+            if ((t!=NULL) && (token==STR))
+                t->attr.name = copyString(tokenString);
+            // 匹配字符串标记
+            match(STR);
+            break;
+        default:
+            // 输出语法错误信息
+            syntaxError("意外的标记 -> ");
+            // 打印当前标记
+            printToken(token,tokenString);
+            // 获取下一个标记
+            token = getToken();
+            break;
+    }
+    return t;
+}
+
+/****************************************/
+/* 解析器的主要函数                      */
+/****************************************/
+/* 解析函数返回新构建的语法树             */
+TreeNode * parse(void)
+{ 
+    TreeNode * t = newStmtNode(ProgramK); // 创建一个程序节点
+    // 获取第一个标记
+    token = getToken();
+    // 新增一个孩子节点，用于delclarations
+    if (token == INT || token == BOOL || token == STRING)
+    {
+        t->child[0] = declarations();
+        t->child[1] = stmt_sequence();
+    }
+    else{
+        t->child[0] = stmt_sequence();
+    }
+    
+    if (token!=ENDFILE)
+        // 输出语法错误信息
+        syntaxError("代码在文件结束前结束\n");
+    return t;
+}
+
+static TreeNode * declarations(void)
+{
+    TreeNode * t = NULL;
+    TreeNode * p = NULL;
+
+    while ((token == INT) || (token == BOOL) || (token == STRING))
+    {
+        TreeNode * q = decl();
+        match(SEMI);
+
+        if (t == NULL)
+        {
+            t = q;
+            p = q;
+        }
+        else
+        {
+            p->sibling = q;
+            p = q;
+        }
+    }
+
+    return t;
+}
+
+
+static TreeNode * decl(void)
+{
+    TreeNode * t = type_specifier();
+    t->child[0] = varlist();
+    return t;
+}
+
+static TreeNode * type_specifier(void)
+{
+    TreeNode * t = NULL;
+    switch (token) {
+        case INT:
+            // 新增创建一个类型节点
+            t = newTypeNode(IntK);
+            // 匹配数字标记
+            match(INT);
+            break;
+        case BOOL:
+            // 新增创建一个类型节点
+            t = newTypeNode(BoolK);
+            // 匹配数字标记
+            match(BOOL);
+            break;
+        case STRING:
+            // 新增创建一个类型节点
+            t = newTypeNode(StringK);
+            // 匹配数字标记
+            match(STRING);
+            break;
+        default:
+            // 输出语法错误信息
+            syntaxError("意外的标记 -> ");
+            // 打印当前标记
+            printToken(token,tokenString);
+            // 获取下一个标记
+            token = getToken();
+            break;
+    }
+    return t;
+}
+
+// static TreeNode * varlist(void)
+// {
+//     // 创建一个标识符节点
+//     TreeNode * t = newExpNode(IdK);
+//     if ((t!=NULL) && (token==ID))
+//         t->attr.name = copyString(tokenString);
+//     // 匹配标识符标记
+//     match(ID);
+    
+//     // 解析一条语句
+//     TreeNode * p = t;
+//     // 当未到文件结尾，未遇到 分号 标记时继续解析
+//     while ((token!=ENDFILE) && (token!=SEMI))
+//     { 
+//         TreeNode * q;
+//         // 匹配逗号
+//         match(COMMA);
+//         // 解析下一条语句
+//         q = newExpNode(IdK);
+//         if ((p!=NULL) && (token==ID))
+//             p->attr.name = copyString(tokenString);
+//         // 匹配标识符标记
+//         match(ID);
+
+//         if (q!=NULL) {
+//             if (t==NULL) t = p = q;
+//             else {
+//                 // 将新语句作为兄弟节点连接
+//                 p->sibling = q;
+//                 p = q;
+//             }
+//         }
+//     }
+//     return t;
+// }
+
+static TreeNode * varlist(void)
+{
+    TreeNode * t = NULL;
+    TreeNode * p = NULL;
+
+    while (token == ID)
+    {
+        TreeNode * q = newExpNode(IdK);
+        q->attr.name = copyString(tokenString);
+        match(ID);
+
+        if (t == NULL)
+        {
+            t = q;
+            p = q;
+        }
+        else
+        {
+            p->child[0] = q;
+            p = q;
+        }
+
+        if (token == COMMA)
+        {
+            match(COMMA);
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return t;
+}
+
+static TreeNode * while_stmt(void)
+{
+    // 创建一个 while 语句节点
+    TreeNode * t = newStmtNode(WhileK);
+    // 匹配 do 标记
+    match(DO);
+    if (t!=NULL) t->child[0] = stmt_sequence();
+    // 匹配 while 标记
+    match(WHILE);
+    // bool exp通过_exp()函数解析
+    if (t!=NULL) t->child[1] = _exp();
+    return t;
+}

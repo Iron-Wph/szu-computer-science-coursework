@@ -1,0 +1,150 @@
+{
+  "start_state": 0,
+  "accept_states": [],
+  "states": [
+    {
+      "id": 0,
+      "items": [
+        "S' -> .E",
+        "E -> .E+T",
+        "E -> .T",
+        "T -> .T*F",
+        "T -> .F",
+        "F -> .(E)",
+        "F -> .i"
+      ],
+      "transitions": {
+        "(": 4,
+        "E": 1,
+        "F": 3,
+        "T": 2,
+        "i": 5
+      }
+    },
+    {
+      "id": 1,
+      "items": [
+        "S' -> E.",
+        "E -> E.+T"
+      ],
+      "transitions": {
+        "+": 6
+      }
+    },
+    {
+      "id": 2,
+      "items": [
+        "E -> T.",
+        "T -> T.*F"
+      ],
+      "transitions": {
+        "*": 7
+      }
+    },
+    {
+      "id": 3,
+      "items": [
+        "T -> F."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 4,
+      "items": [
+        "F -> (.E)",
+        "E -> .E+T",
+        "E -> .T",
+        "T -> .T*F",
+        "T -> .F",
+        "F -> .(E)",
+        "F -> .i"
+      ],
+      "transitions": {
+        "(": 4,
+        "E": 8,
+        "F": 3,
+        "T": 2,
+        "i": 5
+      }
+    },
+    {
+      "id": 5,
+      "items": [
+        "F -> i."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 6,
+      "items": [
+        "E -> E+.T",
+        "T -> .T*F",
+        "T -> .F",
+        "F -> .(E)",
+        "F -> .i"
+      ],
+      "transitions": {
+        "(": 4,
+        "F": 3,
+        "T": 9,
+        "i": 5
+      }
+    },
+    {
+      "id": 7,
+      "items": [
+        "T -> T*.F",
+        "F -> .(E)",
+        "F -> .i"
+      ],
+      "transitions": {
+        "(": 4,
+        "F": 10,
+        "i": 5
+      }
+    },
+    {
+      "id": 8,
+      "items": [
+        "F -> (E.)",
+        "E -> E.+T"
+      ],
+      "transitions": {
+        ")": 11,
+        "+": 6
+      }
+    },
+    {
+      "id": 9,
+      "items": [
+        "E -> E+T.",
+        "T -> T.*F"
+      ],
+      "transitions": {
+        "*": 7
+      }
+    },
+    {
+      "id": 10,
+      "items": [
+        "T -> T*F."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 11,
+      "items": [
+        "F -> (E)."
+      ],
+      "transitions": {
+
+      }
+    }
+  ]
+}

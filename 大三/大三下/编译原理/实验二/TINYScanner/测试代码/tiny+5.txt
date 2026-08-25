@@ -1,0 +1,9 @@
+{ This is a test program }
+int num := 123;
+bool flag := true;
+string message := 'Hello, world!';
+if num > 100 then
+    write message;
+else
+    read num;
+end

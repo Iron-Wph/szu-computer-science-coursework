@@ -1,0 +1,7 @@
+true	false		or		and		not
+int		bool		string	while		do
+if		then		else	end		repeat
+until	read		write		,		;  
+:=		+			-			*		/
+(		)			<			=		>
+<=		>=			a2c			123	'EFG'

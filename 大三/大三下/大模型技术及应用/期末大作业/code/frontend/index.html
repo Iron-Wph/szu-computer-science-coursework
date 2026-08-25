@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 智能问答系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> AI 助手</h2>
+                <button class="new-chat-btn" onclick="startNewChat()">
+                    <i class="fas fa-plus"></i> 新会话
+                </button>
+                <a href="knowledge.html" class="knowledge-btn">
+                    <i class="fas fa-database"></i> 知识库管理
+                </a>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <!-- 历史会话记录将在这里动态生成 -->
+                <!-- 每条会话旁边加删除按钮 -->
+            </div>
+        </div>
+
+        <!-- 主聊天区域 -->
+        <div class="main-content">
+            <!-- 聊天消息区域 -->
+            <div class="chat-container" id="chatContainer">
+                <div class="welcome-message" id="welcomeMessage">
+                    <div class="welcome-content">
+                        <i class="fas fa-robot welcome-icon"></i>
+                        <h1>欢迎使用 AI 智能问答系统</h1>
+                        <p>我可以帮助你解答关于中药学的问题，请开始提问吧！</p>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-search"></i>
+                                <span>智能检索知识库</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-history"></i>
+                                <span>保存对话历史</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="input-container">
+                <!-- 移除上传文件区域 -->
+                <div class="message-input-container">
+                    <div class="message-input-wrapper">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="输入你的问题..." 
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                        ></textarea>
+                        <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 水印 -->
+    <div class="watermark">
+        <div class="watermark-content" id="watermarkContent">
+            <!-- 水印内容将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <!-- 加载动画 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>AI 正在思考中...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

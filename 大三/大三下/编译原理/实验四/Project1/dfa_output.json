@@ -1,0 +1,115 @@
+{
+  "start_state": 0,
+  "accept_states": [],
+  "states": [
+    {
+      "id": 0,
+      "items": [
+        "S' -> .S",
+        "S -> .L=R",
+        "S -> .R",
+        "L -> .*R",
+        "L -> .i",
+        "R -> .L"
+      ],
+      "transitions": {
+        "*": 4,
+        "L": 2,
+        "R": 3,
+        "S": 1
+      }
+    },
+    {
+      "id": 1,
+      "items": [
+        "S' -> S."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 2,
+      "items": [
+        "S -> L.=R",
+        "R -> L."
+      ],
+      "transitions": {
+        "=": 6
+      }
+    },
+    {
+      "id": 3,
+      "items": [
+        "S -> R."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 4,
+      "items": [
+        "L -> *.R",
+        "R -> .L",
+        "L -> .*R",
+        "L -> .i"
+      ],
+      "transitions": {
+        "*": 4,
+        "L": 8,
+        "R": 7
+      }
+    },
+    {
+      "id": 5,
+      "items": [
+        "L -> i."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 6,
+      "items": [
+        "S -> L=.R",
+        "R -> .L",
+        "L -> .*R",
+        "L -> .i"
+      ],
+      "transitions": {
+        "*": 4,
+        "L": 8,
+        "R": 9
+      }
+    },
+    {
+      "id": 7,
+      "items": [
+        "L -> *R."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 8,
+      "items": [
+        "R -> L."
+      ],
+      "transitions": {
+
+      }
+    },
+    {
+      "id": 9,
+      "items": [
+        "S -> L=R."
+      ],
+      "transitions": {
+
+      }
+    }
+  ]
+}

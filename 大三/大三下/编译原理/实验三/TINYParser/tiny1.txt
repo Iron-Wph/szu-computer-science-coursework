@@ -1,0 +1,18 @@
+{New TINY Test Program}
+read a;
+read b;
+if a=0 then
+    result := b
+else
+    if b=0 then
+        result := a
+    else
+        result := 0;
+        repeat
+            result := result + a;
+            b := b - 1
+        until b=0
+    end
+end;
+write result;
+

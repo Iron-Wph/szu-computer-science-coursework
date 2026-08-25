@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库管理</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .knowledge-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+            margin: 0;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .upload-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #999;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .documents-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .documents-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .documents-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0;
+        }
+        
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #f0f2f5;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #e4e6e9;
+        }
+        
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .document-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .document-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .document-info {
+            flex: 1;
+        }
+        
+        .document-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+        
+        .document-meta {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .document-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .view-btn:hover {
+            background: #bbdefb;
+        }
+        
+        .delete-btn {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .delete-btn:hover {
+            background: #ffcdd2;
+        }
+        
+        .document-content {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            max-height: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-body {
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn.confirm {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .modal-btn.confirm:hover {
+            background: #c82333;
+        }
+        
+        .modal-btn.cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .modal-btn.cancel:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="knowledge-page">
+        <!-- 页面头部 -->
+        <div class="knowledge-header">
+            <h1><i class="fas fa-database"></i> 知识库文件管理</h1>
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回聊天</a>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="knowledge-main">
+            <!-- 左侧文件列表 -->
+            <div class="file-list-container">
+                <div class="file-list-header">
+                    <h3>文件列表</h3>
+                    <span id="fileCount">0 个文件</span>
+                </div>
+                <div class="file-list" id="fileList">
+                    <!-- 文件列表动态生成 -->
+                </div>
+            </div>
+
+            <!-- 右侧上传区域 -->
+            <div class="upload-container">
+                <div class="upload-section">
+                    <h3>上传文件</h3>
+                    <input type="file" id="uploadInput" multiple accept=".txt,.pdf,.md,.doc,.docx" style="display:none;">
+                    <button class="upload-btn" onclick="document.getElementById('uploadInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>选择文件</span>
+                    </button>
+                    <div class="upload-info">
+                        <p>支持格式：TXT, PDF, MD, DOC, DOCX</p>
+                        <p>最大文件大小：10MB</p>
+                    </div>
+                    <div id="uploadStatus" class="upload-status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 水印 -->
+    <div class="watermark">
+        <div class="watermark-content" id="watermarkContent">
+            <!-- 水印内容将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal" id="deleteModal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+            </div>
+            <div class="modal-body">
+                <p id="deleteText">确定要删除该文件吗？</p>
+                <div class="modal-actions">
+                    <button class="modal-btn confirm" id="confirmDeleteBtn">确定</button>
+                    <button class="modal-btn cancel" id="cancelDeleteBtn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 知识库管理JS
+        let pendingDeleteFile = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFileList();
+            setupEventListeners();
+            initWatermark(); // 初始化水印
+        });
+        
+        // 初始化水印
+        function initWatermark() {
+            const watermarkContent = document.getElementById('watermarkContent');
+            if (!watermarkContent) return;
+            
+            // 清空现有内容
+            watermarkContent.innerHTML = '';
+            
+            // 水印文本
+            const watermarkText = '中药学AI问答系统 © 2024';
+            
+            // 计算需要多少个水印才能覆盖整个屏幕
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            // 每个水印元素的大致尺寸
+            const watermarkWidth = 200;
+            const watermarkHeight = 100;
+            
+            // 计算行列数 (多加几个确保覆盖)
+            const cols = Math.ceil(screenWidth / watermarkWidth) * 2;
+            const rows = Math.ceil(screenHeight / watermarkHeight) * 2;
+            
+            // 生成水印
+            for (let i = 0; i < rows * cols; i++) {
+                const watermark = document.createElement('div');
+                watermark.className = 'watermark-text';
+                watermark.innerHTML = `<i class="fas fa-shield-alt"></i>${watermarkText}`;
+                watermarkContent.appendChild(watermark);
+            }
+        }
+        
+        // 窗口大小改变时重新计算水印
+        window.addEventListener('resize', initWatermark);
+
+        function setupEventListeners() {
+            // 文件上传
+            document.getElementById('uploadInput').addEventListener('change', handleUpload);
+            
+            // 删除确认
+            document.getElementById('cancelDeleteBtn').onclick = function() {
+                document.getElementById('deleteModal').style.display = 'none';
+                pendingDeleteFile = null;
+            };
+            
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                if (pendingDeleteFile) {
+                    deleteFile(pendingDeleteFile);
+                }
+                document.getElementById('deleteModal').style.display = 'none';
+                pendingDeleteFile = null;
+            };
+        }
+
+        function loadFileList() {
+            fetch('http://127.0.0.1:5000/api/documents').then(r=>r.json()).then(data => {
+                const list = document.getElementById('fileList');
+                const count = document.getElementById('fileCount');
+                
+                list.innerHTML = '';
+                if (data.files && data.files.length > 0) {
+                    count.textContent = `${data.files.length} 个文件`;
+                    data.files.forEach(fname => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        fileItem.innerHTML = `
+                            <div class="file-info" onclick="downloadFile('${encodeURIComponent(fname)}')">
+                                <i class="fas fa-file-alt file-icon"></i>
+                                <span class="file-name">${fname}</span>
+                            </div>
+                            <button class="delete-file-btn" onclick="handleDeleteClick(event, '${encodeURIComponent(fname)}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        `;
+                        list.appendChild(fileItem);
+                    });
+                } else {
+                    count.textContent = '0 个文件';
+                    list.innerHTML = '<div class="empty-state">暂无文件</div>';
+                }
+            });
+        }
+
+        // 处理删除按钮点击
+        function handleDeleteClick(event, fname) {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('删除按钮被点击');
+            console.log('文件名:', fname);
+            
+            // 显示删除确认框
+            showDeleteModal(fname);
+        }
+
+        function handleUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            const status = document.getElementById('uploadStatus');
+            status.innerHTML = `<p>正在上传 ${files.length} 个文件...</p>`;
+            
+            let uploadedCount = 0;
+            let failedCount = 0;
+            
+            files.forEach((file, index) => {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('http://127.0.0.1:5000/api/documents/upload', {
+                    method: 'POST',
+                    body: formData
+                }).then(r=>r.json()).then(data => {
+                    uploadedCount++;
+                    updateUploadStatus(uploadedCount, failedCount, files.length);
+                    if (uploadedCount + failedCount === files.length) {
+                        loadFileList();
+                        setTimeout(() => {
+                            status.innerHTML = '';
+                        }, 3000);
+                    }
+                }).catch(() => {
+                    failedCount++;
+                    updateUploadStatus(uploadedCount, failedCount, files.length);
+                });
+            });
+            
+            // 清空文件输入
+            e.target.value = '';
+        }
+
+        function updateUploadStatus(success, failed, total) {
+            const status = document.getElementById('uploadStatus');
+            status.innerHTML = `<p>上传完成：${success} 成功，${failed} 失败 / ${total} 总计</p>`;
+        }
+
+        function downloadFile(fname) {
+            const filename = decodeURIComponent(fname);
+            console.log('下载文件:', filename);
+            
+            // 创建一个隐藏的下载链接
+            const downloadUrl = `http://127.0.0.1:5000/api/documents/${fname}/download`;
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            
+            // 添加到页面并触发下载
+            document.body.appendChild(link);
+            link.click();
+            
+            // 清理
+            document.body.removeChild(link);
+        }
+
+        function showDeleteModal(fname) {
+            const filename = decodeURIComponent(fname);
+            console.log('显示删除确认框:', filename);
+            pendingDeleteFile = fname;
+            
+            const deleteText = document.getElementById('deleteText');
+            const deleteModal = document.getElementById('deleteModal');
+            
+            console.log('deleteText元素:', deleteText);
+            console.log('deleteModal元素:', deleteModal);
+            
+            if (deleteText && deleteModal) {
+                deleteText.textContent = `确定要删除文件 "${filename}" 吗？`;
+                deleteModal.style.display = 'flex';
+                
+                // 添加更明显的样式确保可见
+                deleteModal.style.cssText = `
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    background: rgba(255, 255, 255, 0) !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    z-index: 10000 !important;
+                `;
+
+            } else {
+                console.error('删除确认框元素未找到');
+            }
+        }
+
+        function deleteFile(fname) {
+            const filename = decodeURIComponent(fname);
+            console.log('删除文件:', filename);
+            
+            fetch(`http://127.0.0.1:5000/api/documents/${fname}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                console.log('删除响应状态:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('删除成功:', data);
+                // 显示成功消息
+                showMessage('文件删除成功', 'success');
+                // 重新加载文件列表
+                loadFileList();
+            })
+            .catch(error => {
+                console.error('删除文件失败:', error);
+                showMessage(`删除失败: ${error.message}`, 'error');
+            });
+        }
+
+        // 显示消息提示
+        function showMessage(message, type = 'info') {
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-toast ${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                ${type === 'success' ? 'background: #28a745;' : ''}
+                ${type === 'error' ? 'background: #dc3545;' : ''}
+                ${type === 'info' ? 'background: #17a2b8;' : ''}
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
