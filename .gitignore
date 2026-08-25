@@ -7,6 +7,13 @@
 *.p12
 *.pfx
 
+# Local account fixtures containing names, identifiers, or passwords
+/大三/大三上/基于Web的编程/Web/courses.json
+/大三/大三上/基于Web的编程/Web/cxzczxc.json
+/大三/大三上/基于Web的编程/Web/students.json
+/大三/大三上/基于Web的编程/Web/teachers.json
+/大三/大三上/基于Web的编程/Web/users.json
+
 # Archives
 *.zip
 *.rar
