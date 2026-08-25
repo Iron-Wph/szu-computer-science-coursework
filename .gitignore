@@ -68,6 +68,7 @@
 **/.lift/
 **/.vscode/
 **/exe/
+**/*可执行文件*/
 **/*.iml
 **/.classpath
 **/.project
