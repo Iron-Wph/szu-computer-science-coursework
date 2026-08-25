@@ -1,0 +1,10 @@
+GolangRules
+KotlinIsCool
+SwiftAndSafe
+RustIsFast
+ScalaIsScalable
+GoGreenSaveEarth
+EatHealthyLiveLong
+ReadMoreKnowMore
+TravelWideSeeMore
+LearnHardGrowFast
