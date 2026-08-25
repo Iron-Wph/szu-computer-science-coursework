@@ -27,7 +27,11 @@ $binaryMagicFiles = [System.Collections.Generic.List[string]]::new()
 
 foreach ($relativePath in $tracked) {
     $extension = [System.IO.Path]::GetExtension($relativePath).ToLowerInvariant()
-    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or [System.IO.Path]::GetFileName($relativePath) -in @('.classpath', '.project') -or $extension -eq '.iml') {
+    if ($blockedExtensions -contains $extension -or $relativePath -match $blockedPathPattern -or [System.IO.Path]::GetFileName($relativePath) -in @(
+        '.classpath', '.project', 'CMakeCache.txt', 'cmake_install.cmake',
+        'ALL_BUILD.vcxproj', 'ALL_BUILD.vcxproj.filters',
+        'ZERO_CHECK.vcxproj', 'ZERO_CHECK.vcxproj.filters'
+    ) -or $extension -eq '.iml') {
         $blockedFiles.Add($relativePath)
     }
 

@@ -76,6 +76,10 @@
 **/.cache/
 **/CMakeFiles/
 **/cmake-build-*/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/ALL_BUILD.vcxproj*
+**/ZERO_CHECK.vcxproj*
 **/Debug/
 **/Release/
 **/x64/
